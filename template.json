@@ -1,10 +1,18 @@
 {
   "id": "tau.blog-mochi",
-  "name": "团子小镇",
-  "description": "可爱风博客模板：站点是一座小镇，一只会看你、会被戳、会睡着的团子陪访客读文章、翻卡片、逛项目文档。",
+  "name": "团子铺",
+  "description": "可爱但安静的博客模板：把博客当成一家和果子小店，店主是一只会看你、会被戳、会打盹的团子。",
   "minAppVersion": "0.59.0",
-  "categories": ["blog-template"],
-  "keywords": ["博客", "个人网站", "静态站点", "可爱", "主题"],
+  "categories": [
+    "blog-template"
+  ],
+  "keywords": [
+    "博客",
+    "个人网站",
+    "静态站点",
+    "可爱",
+    "主题"
+  ],
   "siteFields": [
     {
       "key": "description",
@@ -25,12 +33,24 @@
       "label": "团子的颜色",
       "type": "select",
       "options": [
-        { "value": "pink", "label": "麻薯粉" },
-        { "value": "mint", "label": "薄荷" },
-        { "value": "sky", "label": "天蓝" },
-        { "value": "butter", "label": "奶黄" }
+        {
+          "value": "sakura",
+          "label": "樱花"
+        },
+        {
+          "value": "matcha",
+          "label": "抹茶"
+        },
+        {
+          "value": "shiro",
+          "label": "白玉"
+        },
+        {
+          "value": "kuri",
+          "label": "栗子"
+        }
       ],
-      "default": "pink"
+      "default": "sakura"
     },
     {
       "key": "mascotLines",
@@ -41,10 +61,10 @@
     },
     {
       "key": "ambient",
-      "label": "小镇动画",
+      "label": "团子的小动作",
       "type": "switch",
       "default": true,
-      "description": "首页的云、烟囱的烟和小蜗牛；关掉后小镇保持静止"
+      "description": "首页团子眨眼和跟着鼠标看；关掉后团子保持静止"
     }
   ]
 }

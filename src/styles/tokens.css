@@ -1,128 +1,112 @@
 /*
- * 团子小镇的设计 token。
+ * 团子铺的设计 token：一家和果子小店的包装纸。
  *
  * 原始值统一用 --mochi-* 命名空间，避免与正文插件样式撞名；模板组件经下方 @theme 映射的
- * Tailwind 语义类消费（bg-paper / text-ink-2 / shadow-lift …），不直接写色值。
- * 规则：马卡龙色只做小面积点缀与胶带，大面积用淡色组（soft-*）；文字一律用墨色。
- * 描边分两级：纸面（页面容器、卡片、信纸、便签）用浅细线 + 柔和落影；
- * 贴纸（按钮、标签、开关、团子与插画）保留墨线 + 硬投影。对比度由 tokens.test.ts 守护。
+ * Tailwind 语义类消费（bg-paper / text-ink-2 / border-hair …），不直接写色值。
+ *
+ * 规则：
+ * - 界面安静：分隔只用细线（border-hair），几乎不用投影；只有浮层（搜索、书架、气泡）用一层柔影。
+ * - 樱粉、抹茶、栗、豆沙只画插画与图案；要放文字的底色一律用 tint-*，对比度由 tokens.test.ts 守护。
+ * - 朱红店印（seal）是全页唯一的强调色，只用在少数几处：当前导航的下划线、印章、主按钮。
  */
 :root {
   color-scheme: light;
 
-  /* 底色与墨色 */
-  --mochi-cream: #fbf6ee;
-  --mochi-paper: #fffdfa;
-  --mochi-ink: #3b2f3a;
-  --mochi-ink-2: #64555f;
-  --mochi-ink-3: #9a8a95;
-  --mochi-line: #3b2f3a;
-  --mochi-shadow-color: #3b2f3a;
+  /* 纸与墨 */
+  --mochi-paper: #fbf8f6;
+  --mochi-paper-hi: #fffdfc;
+  --mochi-wash: #f3ece9;
+  --mochi-ink: #2e2a30;
+  --mochi-ink-2: #6b6168;
+  --mochi-ink-3: #8f848c;
+  --mochi-rule: #e3d9d6;
+  --mochi-rule-strong: #cfc3bf;
 
-  /* 马卡龙填充色：文章 = 粉、卡片 = 薄荷、文档 = 丁香 */
-  --mochi-pink: #ffc9d9;
-  --mochi-mint: #c3eeda;
-  --mochi-butter: #ffe9a3;
-  --mochi-sky: #c6e3ff;
-  --mochi-lilac: #e0d2ff;
-  --mochi-peach: #ffd9bf;
-  --mochi-cork: #edcfa6;
-  --mochi-hill: #cdefc9;
+  /* 和果子四色：只画插画、图案与小色点 */
+  --mochi-sakura: #f4d3db;
+  --mochi-matcha: #c9d3a8;
+  --mochi-kuri: #ecd2a8;
+  --mochi-azuki: #d9b7b9;
 
-  /* 淡色组：大面积填充（便签纸、高亮区、草地、天空），比马卡龙色浅得多 */
-  --mochi-soft-pink: #fde8ee;
-  --mochi-soft-mint: #e4f4eb;
-  --mochi-soft-butter: #fff5d6;
-  --mochi-soft-sky: #e8f2fd;
-  --mochi-soft-lilac: #efe8fd;
-  --mochi-soft-peach: #ffeee2;
-  --mochi-meadow: #e4f1dc;
-  --mochi-horizon: #d9e9fa;
+  /* 可放文字的淡底 */
+  --mochi-tint-sakura: #fbebef;
+  --mochi-tint-matcha: #eef2e0;
+  --mochi-tint-kuri: #faf0dc;
 
-  /* 纸面一级：浅细线与柔和落影 */
-  --mochi-sheet-line: rgb(59 47 58 / 0.2);
-  --mochi-sheet-shadow: 0 1px 0 rgb(59 47 58 / 0.05), 0 14px 26px -20px rgb(59 47 58 / 0.5);
-  --mochi-sheet-shadow-hover: 0 1px 0 rgb(59 47 58 / 0.05), 0 22px 30px -20px rgb(59 47 58 / 0.55);
-  --mochi-dot: rgb(59 47 58 / 0.14);
+  /* 带色文字 */
+  --mochi-sakura-ink: #a6466a;
+  --mochi-matcha-ink: #56642f;
 
-  /* 强调色：accent 只做图形，accent-ink 用于文字与白字按钮底 */
-  --mochi-accent: #e25a86;
-  --mochi-accent-ink: #b8336a;
-  --mochi-on-accent: #ffffff;
-  --mochi-glow: #ffe9a3;
-  --mochi-sun: #ffd45c;
-  --mochi-moon: #f7f1d9;
-  --mochi-moon-shade: #d9d1b4;
-  --mochi-night-sky: #3a3361;
-  --mochi-code: #2f2838;
-  --mochi-code-ink: #f5edf7;
+  /* 店印 */
+  --mochi-seal: #bf4a68;
+  --mochi-on-seal: #fff8f6;
 
-  /* 团子本体：五官与描边不随明暗变化 */
-  --mochi-face: #3b2f3a;
-  --mochi-blush: #e8628c;
-  --mochi-body-pink: #ffd6e2;
-  --mochi-body-mint: #c8f0dd;
-  --mochi-body-sky: #cfe7ff;
-  --mochi-body-butter: #ffecae;
-  --mochi-ground: #3b2f3a22;
+  --mochi-glow: #fff1c9;
+  --mochi-code: #f3ece9;
+  --mochi-code-ink: #2e2a30;
 
-  /* 形状与动效 */
-  --mochi-stroke: 2.5px;
-  --mochi-stroke-bold: 3px;
-  --mochi-lift-s: 0 2px 0 var(--mochi-shadow-color);
-  --mochi-lift: 0 4px 0 var(--mochi-shadow-color);
-  --mochi-lift-l: 0 6px 0 var(--mochi-shadow-color);
+  /* 团子：五官与描边永远是墨色，身体四种口味 */
+  --mochi-face: #2e2a30;
+  --mochi-blush: #e2849c;
+  --mochi-leaf: #9fb06b;
+  --mochi-leaf-ink: #56642f;
+  --mochi-body-sakura: #fbe7ec;
+  --mochi-body-matcha: #e6edcf;
+  --mochi-body-shiro: #f8f4ec;
+  --mochi-body-kuri: #f5e3c8;
+  --mochi-ground: rgb(46 42 48 / 0.08);
 
-  /* 字体 */
-  --mochi-font-head: "ZCOOL KuaiLe", "Baloo 2", "PingFang SC", sans-serif;
-  --mochi-font-latin: "Baloo 2", "ZCOOL KuaiLe", sans-serif;
-  --mochi-font-body:
-    "LXGW WenKai Screen", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  /* 浮层的一层柔影 */
+  --mochi-float: 0 1px 2px rgb(46 42 48 / 0.06), 0 18px 40px -22px rgb(46 42 48 / 0.35);
+
+  /* 字体：全站一套霞鹜文楷，数字用系统衬线 */
+  --mochi-font-body: "LXGW WenKai Screen", "Songti SC", "Noto Serif SC", "PingFang SC", serif;
+  --mochi-font-num: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --mochi-font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 
-  /* --tau-* 桥接：正文渲染器与内容插件只认这套契约，跟随团子配色 */
-  --tau-bg-page: var(--mochi-cream);
-  --tau-bg-surface: var(--mochi-paper);
-  --tau-bg-surface-hover: var(--mochi-cream);
-  --tau-bg-sunken: var(--mochi-cream);
-  --tau-bg-track: color-mix(in srgb, var(--mochi-ink) 16%, transparent);
-  --tau-bg-hover: color-mix(in srgb, var(--mochi-ink) 6%, transparent);
-  --tau-bg-press: color-mix(in srgb, var(--mochi-ink) 12%, transparent);
-  --tau-bg-selected: var(--mochi-soft-pink);
+  /* --tau-* 桥接：正文渲染器与内容插件只认这套契约，跟随团子铺配色 */
+  --tau-bg-page: var(--mochi-paper);
+  --tau-bg-surface: var(--mochi-paper-hi);
+  --tau-bg-surface-hover: var(--mochi-wash);
+  --tau-bg-sunken: var(--mochi-wash);
+  --tau-bg-track: var(--mochi-rule);
+  --tau-bg-hover: rgb(46 42 48 / 0.05);
+  --tau-bg-press: rgb(46 42 48 / 0.1);
+  --tau-bg-selected: var(--mochi-tint-sakura);
   --tau-ink-1: var(--mochi-ink);
   --tau-ink-2: var(--mochi-ink-2);
   --tau-ink-3: var(--mochi-ink-3);
-  --tau-ink-inverse: var(--mochi-cream);
-  --tau-line-1: var(--mochi-sheet-line);
-  --tau-line-2: color-mix(in srgb, var(--mochi-ink) 10%, transparent);
-  --tau-accent: var(--mochi-accent-ink);
-  --tau-accent-hover: color-mix(in srgb, var(--mochi-accent-ink) 85%, var(--mochi-ink));
-  --tau-accent-soft: var(--mochi-soft-pink);
-  --tau-accent-text: var(--mochi-accent-ink);
-  --tau-focus-ring: 0 0 0 3px color-mix(in srgb, var(--mochi-accent) 40%, transparent);
-  --tau-ok: #2b7350;
-  --tau-ok-soft: var(--mochi-soft-mint);
-  --tau-warn: #80590c;
-  --tau-warn-soft: var(--mochi-soft-butter);
-  --tau-danger: #9c2e2e;
-  --tau-danger-soft: var(--mochi-soft-pink);
-  --tau-info: #2c6499;
-  --tau-info-soft: var(--mochi-soft-sky);
+  --tau-ink-inverse: var(--mochi-paper);
+  --tau-line-1: var(--mochi-rule);
+  --tau-line-2: color-mix(in srgb, var(--mochi-rule) 60%, transparent);
+  --tau-accent: var(--mochi-sakura-ink);
+  --tau-accent-hover: var(--mochi-seal);
+  --tau-accent-soft: var(--mochi-tint-sakura);
+  --tau-accent-text: var(--mochi-sakura-ink);
+  --tau-focus-ring: 0 0 0 3px color-mix(in srgb, var(--mochi-seal) 30%, transparent);
+  --tau-ok: #4e6a2e;
+  --tau-ok-soft: var(--mochi-tint-matcha);
+  --tau-warn: #8a5a12;
+  --tau-warn-soft: var(--mochi-tint-kuri);
+  --tau-danger: #a13a3a;
+  --tau-danger-soft: var(--mochi-tint-sakura);
+  --tau-info: #2f5f8f;
+  --tau-info-soft: var(--mochi-wash);
   --tau-tag-1: var(--tau-ok);
-  --tau-tag-1-soft: var(--mochi-soft-mint);
+  --tau-tag-1-soft: var(--mochi-tint-matcha);
   --tau-tag-2: var(--tau-info);
-  --tau-tag-2-soft: var(--mochi-soft-sky);
-  --tau-tag-3: #6a48b8;
-  --tau-tag-3-soft: var(--mochi-soft-lilac);
+  --tau-tag-2-soft: var(--mochi-wash);
+  --tau-tag-3: #6a4aa8;
+  --tau-tag-3-soft: var(--mochi-tint-sakura);
   --tau-tag-4: var(--tau-warn);
-  --tau-tag-4-soft: var(--mochi-soft-butter);
-  --tau-tag-5: var(--mochi-accent-ink);
-  --tau-tag-5-soft: var(--mochi-soft-pink);
-  --tau-overlay: rgb(59 47 58 / 0.35);
-  --tau-shadow-card: 0 0 0 1px var(--mochi-sheet-line);
-  --tau-shadow-lift: var(--mochi-sheet-shadow);
-  --tau-shadow-float: 0 0 0 1.5px var(--mochi-sheet-line), var(--mochi-sheet-shadow);
-  --tau-shadow-paper: var(--mochi-sheet-shadow);
+  --tau-tag-4-soft: var(--mochi-tint-kuri);
+  --tau-tag-5: var(--mochi-sakura-ink);
+  --tau-tag-5-soft: var(--mochi-tint-sakura);
+  --tau-overlay: rgb(46 42 48 / 0.28);
+  --tau-shadow-card: 0 0 0 1px var(--mochi-rule);
+  --tau-shadow-lift: var(--mochi-float);
+  --tau-shadow-float: 0 0 0 1px var(--mochi-rule), var(--mochi-float);
+  --tau-shadow-paper: var(--mochi-float);
   --tau-font: var(--mochi-font-body);
   --tau-font-mono: var(--mochi-font-mono);
 }
@@ -130,136 +114,103 @@
 :root[data-mode="dark"] {
   color-scheme: dark;
 
-  --mochi-cream: #1f1b2d;
-  --mochi-paper: #2a253c;
-  --mochi-ink: #f5edf7;
-  --mochi-ink-2: #c9bcd2;
-  --mochi-ink-3: #9285a3;
-  /* 深色底上墨黑描边看不见，描边改浅紫灰，投影保持深色 */
-  --mochi-line: #857899;
-  --mochi-shadow-color: #0e0b16;
+  --mochi-paper: #1c191e;
+  --mochi-paper-hi: #221e25;
+  --mochi-wash: #25212a;
+  --mochi-ink: #eee7ea;
+  --mochi-ink-2: #b9afb6;
+  --mochi-ink-3: #8c8390;
+  --mochi-rule: #3a3440;
+  --mochi-rule-strong: #4c4553;
 
-  --mochi-pink: #6b3f5c;
-  --mochi-mint: #2f5548;
-  --mochi-butter: #5a4a2a;
-  --mochi-sky: #2f4766;
-  --mochi-lilac: #4a3d6e;
-  --mochi-peach: #5e4236;
-  --mochi-cork: #5b4637;
-  --mochi-hill: #2b3a3a;
+  --mochi-sakura: #4a2f3b;
+  --mochi-matcha: #3a4230;
+  --mochi-kuri: #4a3c2a;
+  --mochi-azuki: #4a3437;
 
-  --mochi-soft-pink: #3a2b3f;
-  --mochi-soft-mint: #26393a;
-  --mochi-soft-butter: #3a3430;
-  --mochi-soft-sky: #27334a;
-  --mochi-soft-lilac: #302b4a;
-  --mochi-soft-peach: #3b2d33;
-  --mochi-meadow: #24302f;
-  --mochi-horizon: #2a2f57;
+  --mochi-tint-sakura: #33242c;
+  --mochi-tint-matcha: #2a2e25;
+  --mochi-tint-kuri: #332c22;
 
-  --mochi-sheet-line: rgb(201 188 210 / 0.22);
-  --mochi-sheet-shadow: 0 1px 0 rgb(0 0 0 / 0.2), 0 16px 28px -18px rgb(0 0 0 / 0.75);
-  --mochi-sheet-shadow-hover: 0 1px 0 rgb(0 0 0 / 0.2), 0 24px 32px -18px rgb(0 0 0 / 0.8);
-  --mochi-dot: rgb(201 188 210 / 0.16);
+  --mochi-sakura-ink: #f2b6c6;
+  --mochi-matcha-ink: #c3cf9b;
 
-  --mochi-accent: #ff8fb3;
-  --mochi-accent-ink: #ff8fb3;
-  --mochi-on-accent: #1f1b2d;
-  --mochi-glow: #ffd86b;
-  --mochi-code: #16121f;
+  --mochi-seal: #d25c7a;
+  --mochi-on-seal: #1c191e;
 
-  --mochi-body-pink: #f1c3d2;
-  --mochi-body-mint: #b9e3cf;
-  --mochi-body-sky: #bcd8f2;
-  --mochi-body-butter: #f0dc9c;
-  --mochi-ground: #00000066;
+  --mochi-glow: #ffd98a;
+  --mochi-code: #25212a;
+  --mochi-code-ink: #eee7ea;
 
-  --tau-ok: #7fe0b5;
-  --tau-warn: #f2cc74;
-  --tau-danger: #ffbdbd;
-  --tau-info: #8ec2f2;
-  --tau-tag-3: #c9b3ff;
+  --mochi-ground: rgb(0 0 0 / 0.35);
+  --mochi-float: 0 1px 2px rgb(0 0 0 / 0.3), 0 20px 44px -22px rgb(0 0 0 / 0.8);
+
+  --tau-bg-hover: rgb(238 231 234 / 0.06);
+  --tau-bg-press: rgb(238 231 234 / 0.1);
+  --tau-ok: #b6d08a;
+  --tau-warn: #e8c27a;
+  --tau-danger: #f2a7a7;
+  --tau-info: #9dc3ea;
+  --tau-tag-3: #c9b3f2;
   --tau-overlay: rgb(0 0 0 / 0.55);
 }
 
-/* 不用 Tailwind 默认色板与圆角：颜色只能取上面的 token */
+/* 不用 Tailwind 默认色板、圆角与投影：只能取上面的 token */
 @theme {
   --color-*: initial;
   --color-white: #ffffff;
   --radius-*: initial;
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 22px;
-  --radius-xl: 28px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-*: initial;
 }
 
 @theme inline {
-  --color-cream: var(--mochi-cream);
   --color-paper: var(--mochi-paper);
+  --color-paper-hi: var(--mochi-paper-hi);
+  --color-wash: var(--mochi-wash);
   --color-ink: var(--mochi-ink);
   --color-ink-2: var(--mochi-ink-2);
   --color-ink-3: var(--mochi-ink-3);
-  --color-line: var(--mochi-line);
-  --color-pink: var(--mochi-pink);
-  --color-mint: var(--mochi-mint);
-  --color-butter: var(--mochi-butter);
-  --color-sky: var(--mochi-sky);
-  --color-lilac: var(--mochi-lilac);
-  --color-peach: var(--mochi-peach);
-  --color-cork: var(--mochi-cork);
-  --color-hill: var(--mochi-hill);
-  --color-soft-pink: var(--mochi-soft-pink);
-  --color-soft-mint: var(--mochi-soft-mint);
-  --color-soft-butter: var(--mochi-soft-butter);
-  --color-soft-sky: var(--mochi-soft-sky);
-  --color-soft-lilac: var(--mochi-soft-lilac);
-  --color-soft-peach: var(--mochi-soft-peach);
-  --color-meadow: var(--mochi-meadow);
-  --color-sheet-line: var(--mochi-sheet-line);
-  --color-accent: var(--mochi-accent);
-  --color-accent-ink: var(--mochi-accent-ink);
-  --color-on-accent: var(--mochi-on-accent);
+  --color-rule: var(--mochi-rule);
+  --color-rule-strong: var(--mochi-rule-strong);
+  --color-sakura: var(--mochi-sakura);
+  --color-matcha: var(--mochi-matcha);
+  --color-kuri: var(--mochi-kuri);
+  --color-azuki: var(--mochi-azuki);
+  --color-tint-sakura: var(--mochi-tint-sakura);
+  --color-tint-matcha: var(--mochi-tint-matcha);
+  --color-tint-kuri: var(--mochi-tint-kuri);
+  --color-sakura-ink: var(--mochi-sakura-ink);
+  --color-matcha-ink: var(--mochi-matcha-ink);
+  --color-seal: var(--mochi-seal);
+  --color-on-seal: var(--mochi-on-seal);
   --color-glow: var(--mochi-glow);
-  --color-sun: var(--mochi-sun);
-  --color-moon: var(--mochi-moon);
-  --color-night-sky: var(--mochi-night-sky);
   --color-code: var(--mochi-code);
   --color-code-ink: var(--mochi-code-ink);
-  --color-shadow: var(--mochi-shadow-color);
 
-  --font-head: var(--mochi-font-head);
-  --font-latin: var(--mochi-font-latin);
   --font-body: var(--mochi-font-body);
+  --font-num: var(--mochi-font-num);
   --font-mono: var(--mochi-font-mono);
 
-  --shadow-lift-s: var(--mochi-lift-s);
-  --shadow-lift: var(--mochi-lift);
-  --shadow-lift-l: var(--mochi-lift-l);
-  --shadow-sheet: var(--mochi-sheet-shadow);
-  --shadow-sheet-hover: var(--mochi-sheet-shadow-hover);
+  --shadow-float: var(--mochi-float);
 
-  /* spring：用户触发、会冲过头；soft：页面与颜色过渡；drop：盖章、钉便签 */
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* soft：页面、颜色与展开；spring：只给团子和被按下的东西 */
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-drop: cubic-bezier(0.5, 0, 0.75, 0);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 贴纸描边：全站唯一的边框写法 */
-@utility border-sticker {
-  border-width: var(--mochi-stroke);
+/* 细线：全站唯一的分隔写法 */
+@utility border-hair {
+  border-width: 1px;
   border-style: solid;
-  border-color: var(--mochi-line);
+  border-color: var(--mochi-rule);
 }
 
-/* 纸面描边：页面容器、卡片、信纸、便签 */
-@utility border-sheet {
-  border-width: 1.5px;
-  border-style: solid;
-  border-color: var(--mochi-sheet-line);
-}
-
-@utility border-sticker-dashed {
-  border-width: var(--mochi-stroke);
-  border-style: dashed;
-  border-color: var(--mochi-ink-3);
+/* 和纸底：极淡的纤维纹 */
+@utility washi-paper {
+  background-color: var(--mochi-paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .33 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)' opacity='.07'/%3E%3C/svg%3E");
 }

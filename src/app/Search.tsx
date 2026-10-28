@@ -16,10 +16,10 @@ const FILTERS: Array<[Filter, string]> = [
   ["card", "卡片"],
   ["doc", "文档"],
 ];
-const ICONS: Record<SearchHit["type"], [string, string]> = {
-  article: ["✉️", "bg-soft-pink"],
-  card: ["📌", "bg-soft-mint"],
-  doc: ["📖", "bg-soft-lilac"],
+const KIND: Record<SearchHit["type"], { label: string; dot: string }> = {
+  article: { label: "文章", dot: "bg-sakura" },
+  card: { label: "卡片", dot: "bg-matcha" },
+  doc: { label: "文档", dot: "bg-kuri" },
 };
 
 /** 按命中区间高亮；区间来自数据客户端，直接用字符位置切分 */
@@ -30,7 +30,7 @@ function highlight(match: SearchMatch | undefined, fallback: string): ReactNode 
   match.ranges.forEach(([start, end], index) => {
     parts.push(<Fragment key={`t${index}`}>{match.text.slice(cursor, start)}</Fragment>);
     parts.push(
-      <em key={`m${index}`} className="rounded-[4px] bg-butter px-0.5 text-ink not-italic">
+      <em key={`m${index}`} className="bg-[linear-gradient(transparent_60%,var(--mochi-sakura)_60%)] text-ink not-italic">
         {match.text.slice(start, end)}
       </em>,
     );
@@ -127,12 +127,12 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
       aria-label="搜索"
       onClose={onClose}
       onClick={(event) => event.target === dialog.current && onClose()}
-      className="mochi-search m-0 mx-auto mt-[90px] w-[min(600px,calc(100vw-24px))] max-w-none overflow-visible border-0 bg-transparent p-0 text-ink backdrop:bg-[var(--tau-overlay)] backdrop:backdrop-blur-[3px]"
+      className="mochi-search m-0 mx-auto mt-[12vh] w-[min(620px,calc(100vw-24px))] max-w-none overflow-visible border-0 bg-transparent p-0 text-ink backdrop:bg-[var(--tau-overlay)] backdrop:backdrop-blur-[2px]"
     >
       {open && (
-        <div className="mochi-pop relative rounded-[26px] border-sheet bg-paper p-[18px] shadow-[0_30px_60px_-28px_rgb(59_47_58/0.55)]">
-          <span aria-hidden className="absolute -top-[58px] left-[30px]">
-            <Mochi mood={mood} size={74} color={site.chrome().site.mascotColor} />
+        <div className="mochi-pop relative rounded-lg border-hair bg-paper-hi px-6 pt-5 pb-4 shadow-float">
+          <span aria-hidden className="absolute -top-[46px] right-8">
+            <Mochi mood={mood} size={58} color={site.chrome().site.mascotColor} />
           </span>
           <Input
             ref={input}
@@ -146,17 +146,22 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
             onKeyDown={onKeyDown}
             placeholder="团子帮你闻一闻……"
             autoComplete="off"
-            leading={<span aria-hidden>🔍</span>}
+            leading={
+              <svg viewBox="0 0 24 24" width={17} height={17} aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round">
+                <circle cx={11} cy={11} r={6.5} />
+                <path d="M16 16l4 4" />
+              </svg>
+            }
             trailing={<Kbd>Esc</Kbd>}
           />
-          <div role="group" aria-label="按类型筛选" className="mt-3 mb-1.5 flex gap-1.5">
+          <div role="group" aria-label="按类型筛选" className="mt-4 mb-2 flex gap-1.5">
             {FILTERS.map(([value, label]) => (
               <Candy key={value} selected={filter === value} onClick={() => setFilter(value)}>
                 {label}
               </Candy>
             ))}
           </div>
-          <div className="max-h-[320px] overflow-auto">
+          <div className="-mx-2 max-h-[340px] overflow-auto">
             {error ? (
               <p role="alert" className="py-6 text-center text-ink-2">
                 搜索索引没能打开：{error}
@@ -164,7 +169,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
             ) : shown.length > 0 ? (
               <ul id={listId} role="listbox" className="m-0 list-none p-0">
                 {shown.map(({ hit, href }, index) => {
-                  const [icon, tone] = ICONS[hit.type];
+                  const kind = KIND[hit.type];
                   const title = hit.matches?.find((match) => match.field === "title");
                   const summary = hit.matches?.find((match) => match.field !== "title" && match.field !== "tags");
                   return (
@@ -175,27 +180,27 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
                       aria-selected={index === selected}
                       onMouseEnter={() => setSelected(index)}
                       onClick={() => go(href)}
-                      className={cn("mochi-hit-in grid cursor-pointer grid-cols-[auto_1fr] gap-2.5 rounded-md p-2.5", index === selected && "bg-soft-pink")}
-                      style={{ animationDelay: `${index * 0.04}s` }}
+                      className={cn("grid cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-4 rounded-sm px-2 py-2.5", index === selected && "bg-wash")}
                     >
-                      <span aria-hidden className={cn("grid size-[34px] place-items-center rounded-[12px] border-sheet text-[16px]", tone)}>
-                        {icon}
-                      </span>
                       <div className="min-w-0">
-                        <h3 className="truncate font-head text-[16px]">{highlight(title, hit.title || hit.summary)}</h3>
-                        <p className="line-clamp-2 text-[13px] text-ink-2">{highlight(summary, hit.summary)}</p>
+                        <h3 className="truncate text-[16px] font-normal">{highlight(title, hit.title || hit.summary)}</h3>
+                        <p className="mt-0.5 line-clamp-1 text-[13px] text-ink-2">{highlight(summary, hit.summary)}</p>
                       </div>
+                      <span className="flex items-center gap-1.5 text-[12.5px] text-ink-3">
+                        <i aria-hidden className={cn("size-1.5 rounded-full", kind.dot)} />
+                        {kind.label}
+                      </span>
                     </li>
                   );
                 })}
               </ul>
             ) : (
               <p role="status" className="py-6 text-center text-ink-2">
-                {loading ? "闻呀闻……" : searched ? "闻了一圈，什么也没找到……换个词试试？" : "试试输入一个词，比如文章里的标题。"}
+                {loading ? "团子在翻找……" : searched ? "没有找到，换个词试试。" : "输入一个词，搜索文章、卡片和文档。"}
               </p>
             )}
           </div>
-          <div className="mt-2 flex gap-3 border-t-2 border-dashed border-ink-3 pt-2 text-[12px] text-ink-2">
+          <div className="mt-3 flex gap-4 border-t border-solid border-rule pt-3 text-[12px] text-ink-3">
             <span>
               <Kbd>↑</Kbd> <Kbd>↓</Kbd> 挑选
             </span>
@@ -203,7 +208,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
               <Kbd>↵</Kbd> 打开
             </span>
             <span>
-              <Kbd>Esc</Kbd> 让团子回家
+              <Kbd>Esc</Kbd> 关闭
             </span>
           </div>
         </div>

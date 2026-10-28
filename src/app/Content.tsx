@@ -14,8 +14,8 @@ class ContentBoundary extends Component<{ children: ReactNode }, { error: Error 
   render() {
     if (!this.state.error) return this.props.children;
     return (
-      <div role="alert" className="flex items-center gap-3 rounded-md border-sheet bg-soft-peach px-4 py-3 text-[15px]">
-        <Mochi mood="dizzy" size={48} />
+      <div role="alert" className="flex items-center gap-3 rounded-md border-hair bg-tint-kuri px-4 py-3 text-[15px] text-ink">
+        <Mochi mood="dizzy" size={44} />
         正文没能打开：{this.state.error.message}
       </div>
     );

@@ -1,20 +1,16 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "./cn";
 
-export type ChipTone = "pink" | "mint" | "butter" | "sky" | "lilac" | "peach" | "cream";
+export type ChipTone = "sakura" | "matcha" | "kuri" | "azuki";
 
-const TONES: Record<ChipTone, string> = {
-  pink: "bg-pink",
-  mint: "bg-mint",
-  butter: "bg-butter",
-  sky: "bg-sky",
-  lilac: "bg-lilac",
-  peach: "bg-peach",
-  cream: "bg-cream",
+/** 标签只是一粒色点加文字，色点颜色按名字固定：同一个标签在全站永远同色 */
+const DOTS: Record<ChipTone, string> = {
+  sakura: "bg-sakura",
+  matcha: "bg-matcha",
+  kuri: "bg-kuri",
+  azuki: "bg-azuki",
 };
-
-/** 标签按名字落到 6 种马卡龙色之一：同一个标签在全站永远同色 */
-const TAG_TONES: ChipTone[] = ["pink", "mint", "butter", "sky", "lilac", "peach"];
+const TAG_TONES: ChipTone[] = ["sakura", "matcha", "kuri", "azuki"];
 
 export function toneForTag(tag: string): ChipTone {
   let hash = 0;
@@ -22,22 +18,18 @@ export function toneForTag(tag: string): ChipTone {
   return TAG_TONES[hash % TAG_TONES.length];
 }
 
-/** 内容类型的固定颜色：文章 = 粉、卡片 = 薄荷、文档 = 丁香 */
-export const KIND_TONES = { article: "pink", card: "mint", doc: "lilac" } as const satisfies Record<string, ChipTone>;
+/** 内容类型的固定颜色：文章 = 樱花、卡片 = 抹茶、文档 = 栗子 */
+export const KIND_TONES = { article: "sakura", card: "matcha", doc: "kuri" } as const satisfies Record<string, ChipTone>;
 
 export interface ChipProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: ChipTone;
 }
 
-export function Chip({ tone = "cream", className, ...rest }: ChipProps) {
+export function Chip({ tone = "sakura", className, children, ...rest }: ChipProps) {
   return (
-    <span
-      className={cn(
-        "inline-block rounded-full border-2 border-solid border-line px-[9px] font-head text-[12px] leading-[1.7] text-ink",
-        TONES[tone],
-        className,
-      )}
-      {...rest}
-    />
+    <span className={cn("inline-flex items-center gap-1.5 text-[13px] text-ink-2", className)} {...rest}>
+      <i aria-hidden className={cn("size-2 rounded-full ring-1 ring-rule-strong", DOTS[tone])} />
+      {children}
+    </span>
   );
 }

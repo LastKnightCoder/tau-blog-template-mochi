@@ -26,10 +26,10 @@ describe("Mochi 表情", () => {
   });
 
   it("颜色只换身体填充，五官不变", () => {
-    const pink = render(<Mochi color="pink" blink={false} />).container;
-    const mint = render(<Mochi color="mint" blink={false} />).container;
-    expect(pink.querySelector(".mochi-body > path")!.getAttribute("fill")).toBe("var(--mochi-body-pink)");
-    expect(mint.querySelector(".mochi-body > path")!.getAttribute("fill")).toBe("var(--mochi-body-mint)");
+    const pink = render(<Mochi color="sakura" blink={false} />).container;
+    const mint = render(<Mochi color="matcha" blink={false} />).container;
+    expect(pink.querySelector(".mochi-body > path")!.getAttribute("fill")).toBe("var(--mochi-body-sakura)");
+    expect(mint.querySelector(".mochi-body > path")!.getAttribute("fill")).toBe("var(--mochi-body-matcha)");
     expect(pink.querySelectorAll(".mochi-eye").length).toBe(mint.querySelectorAll(".mochi-eye").length);
   });
 
@@ -41,18 +41,21 @@ describe("Mochi 表情", () => {
     expect(large.querySelector(".mochi-zz")).not.toBeNull();
   });
 
-  it("描边随尺寸加粗，夹在 3–7 之间", () => {
+  it("细墨线随尺寸换算，小尺寸加粗，夹在 1.8–5.5 之间", () => {
     const width = (size: number) =>
       Number(render(<Mochi size={size} blink={false} />).container.querySelector(".mochi-body > path")!.getAttribute("stroke-width"));
-    expect(width(24)).toBe(7);
-    expect(width(120)).toBe(3);
-    expect(width(200)).toBe(3);
-    expect(width(64)).toBeCloseTo(4.69, 1);
+    expect(width(24)).toBe(5.5);
+    expect(width(120)).toBe(1.8);
+    expect(width(200)).toBe(1.8);
+    expect(width(64)).toBeCloseTo(3, 1);
   });
 
-  it("帽子画在身体里，跟着身体一起动", () => {
-    const { container } = render(<Mochi hat="night" blink={false} />);
-    expect(container.querySelector('.mochi-body path[fill="#8c7bd8"]')).not.toBeNull();
+  it("默认头顶一片抹茶叶，戴帽子时收起叶子", () => {
+    const leaf = render(<Mochi blink={false} />).container;
+    const hat = render(<Mochi hat="night" blink={false} />).container;
+    expect(leaf.querySelector('.mochi-body path[fill="var(--mochi-leaf)"]')).not.toBeNull();
+    expect(hat.querySelector('.mochi-body path[fill="var(--mochi-leaf)"]')).toBeNull();
+    expect(hat.querySelector('.mochi-body path[fill="var(--mochi-azuki)"]')).not.toBeNull();
   });
 });
 

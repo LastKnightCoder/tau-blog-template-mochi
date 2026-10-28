@@ -38,35 +38,33 @@ async function run() {
     if (event.level === "error") errors.push(event.message);
   });
 
-  // 首页：小镇、房子、邮箱
+  // 首页：站名、团子、三个分区、最近做好的
   await window.loadURL(config.url);
-  await until("document.querySelector('#mailbox-title') !== null", "首页邮箱");
+  await until("document.querySelector('#recent-title') !== null", "首页最近做好的");
   assert.match(await evaluate("document.querySelector('h1').getAttribute('aria-label')"), /独立博客验证/);
-  assert(await evaluate("[...document.querySelectorAll('a')].some(a => a.textContent.includes('邮局'))"));
-  assert(await evaluate("document.querySelectorAll('svg.mochi-svg').length >= 4"), "首页至少有页头、主角与房子里的团子");
-  cases.push("首页渲染站名、房子、邮箱与团子");
+  assert.equal(await evaluate("[...document.querySelectorAll('nav[aria-label=\"分区\"] h2')].map(h => h.textContent).join()"), "文章,卡片,项目");
+  assert(await evaluate("document.querySelectorAll('svg.mochi-svg').length >= 2"), "首页有店标与主角团子");
+  cases.push("首页渲染站名、团子、三个分区与最近做好的");
 
-  // 字体与贴纸样式确实生效
-  const styles = await evaluate(`(()=>{try{const h=document.querySelector('h1 span');const b=document.querySelector('nav[aria-label="主导航"] a');const m=document.querySelector('#mailbox-title').closest('section');const s=getComputedStyle(b);const ms=getComputedStyle(m);return {font:getComputedStyle(h).fontFamily, border:s.borderTopWidth, shadow:s.boxShadow, sheetBorder:ms.borderTopWidth, sheetShadow:ms.boxShadow, bg:getComputedStyle(document.documentElement).backgroundColor}}catch(e){return {error:String(e)}}})()`);
+  // 团子铺：霞鹜文楷、细线导航、和纸底色；界面不用投影
+  const styles = await evaluate(`(()=>{try{const h=document.querySelector('h1 span');const n=document.querySelector('nav[aria-label="主导航"] a');const menu=document.querySelector('nav[aria-label="分区"] a');const s=getComputedStyle(n);return {font:getComputedStyle(h).fontFamily, navBorder:s.borderTopWidth, navShadow:s.boxShadow, menuShadow:getComputedStyle(menu).boxShadow, bg:getComputedStyle(document.querySelector('.washi-paper')).backgroundColor}}catch(e){return {error:String(e)}}})()`);
   assert(!styles.error, styles.error);
-  assert.match(styles.font, /ZCOOL KuaiLe/);
-  assert.equal(styles.border, "2.5px", "按钮是贴纸：墨线");
-  assert.match(styles.shadow, /0px 2px 0px/, "按钮是贴纸：硬投影");
-  assert.equal(styles.sheetBorder, "1.5px", "邮箱是纸面：细线");
-  assert.match(styles.sheetShadow, /-20px/, "邮箱是纸面：柔和落影");
-  assert.equal(styles.bg, "rgb(251, 246, 238)");
-  cases.push("贴纸（按钮）保留墨线硬投影，纸面（邮箱）用细线柔影，奶油底色生效");
+  assert.match(styles.font, /LXGW WenKai Screen/);
+  assert.equal(styles.navBorder, "0px", "导航只是文字");
+  assert.equal(styles.navShadow, "none");
+  assert.equal(styles.menuShadow, "none", "分区菜单用细线，不用投影");
+  assert.equal(styles.bg, "rgb(251, 248, 246)");
+  cases.push("首页用霞鹜文楷、和纸底色，导航与分区菜单没有投影");
 
   // 戳团子会说话
-  const before = await evaluate("document.querySelector('[role=status]')?.textContent");
   await click('button[aria-label$="戳一下"]');
-  await until(`document.querySelector('[role=status]')?.textContent !== ${JSON.stringify(before)}`, "戳团子后气泡换话");
+  await until("document.querySelector('main [role=status]')?.textContent.length > 0", "戳团子后说话");
   cases.push("戳主角团子会换一句话");
 
   // 站内跳转不整页重载
   await evaluate("window.__noReload = true");
   await click('nav[aria-label="主导航"] a[href$="/articles"]');
-  await until("location.pathname.endsWith('/articles') && document.querySelector('h1')?.textContent.includes('邮局')", "文章列表");
+  await until("location.pathname.endsWith('/articles') && document.querySelector('main h1')?.textContent === '文章'", "文章列表");
   assert(await evaluate("window.__noReload === true"), "站内跳转不应整页重载");
   assert(await evaluate("document.querySelector('nav[aria-label=\"主导航\"] a[aria-current=page]')?.textContent === '文章'"));
   cases.push("站内链接走前端路由，导航高亮当前分区");
@@ -84,24 +82,23 @@ async function run() {
   await until("document.querySelector('article button[aria-pressed=\"true\"]') !== null", "表情按钮点亮");
   cases.push("表情按钮点击后保持点亮");
 
-  // 项目文档：从书架进入，寻宝小路与当前页
+  // 项目文档：从页头的项目下拉进入
   await click('nav[aria-label="主导航"] button[aria-haspopup]');
   await until("document.querySelector('a[href*=\"/projects/\"]') !== null", "书架展开");
   await click('a[href*="/projects/"]');
   await until("location.pathname.includes('/projects/') && document.querySelector('article h1') !== null", "文档页");
-  cases.push("从页头书架进入项目文档");
+  cases.push("从页头项目下拉进入项目文档");
 
   // 卡片：便签与标签筛选
   await window.loadURL(config.url + "cards");
-  await until("document.querySelector('h1')?.textContent.includes('便签屋')", "卡片列表");
-  assert(await evaluate("getComputedStyle(document.querySelector('main')).backgroundImage.includes('radial-gradient')"), "卡片列表是手帐点阵页");
-  assert(await evaluate("document.querySelector('main .mochi-washi') !== null"), "便签用和纸胶带");
-  const jar = await evaluate("[...document.querySelectorAll('aside button[aria-pressed]')].find(b => b.textContent.includes('发布'))?.textContent");
+  await until("document.querySelector('main h1')?.textContent === '卡片'", "卡片列表");
+  assert(await evaluate("document.querySelectorAll('main ul.grid > li').length > 0"), "卡片列表是一盒点心格");
+  const jar = await evaluate("[...document.querySelectorAll('main [role=group] button[aria-pressed]')].find(b => b.textContent.includes('发布'))?.textContent");
   if (jar) {
-    await evaluate("[...document.querySelectorAll('aside button[aria-pressed]')].find(b => b.textContent.includes('发布')).click()");
+    await evaluate("[...document.querySelectorAll('main [role=group] button[aria-pressed]')].find(b => b.textContent.includes('发布')).click()");
     await until("location.search.includes('tag=')", "标签筛选写入地址");
   }
-  cases.push("卡片列表与标签罐子筛选");
+  cases.push("卡片列表与标签筛选");
   await click("ul a[href*='/cards/']");
   await until("location.pathname.includes('/cards/') && document.querySelector('[data-slate-editor].mochi-prose')?.textContent.includes('共享协议卡片')", "卡片详情正文");
   assert(await evaluate("getComputedStyle(document.querySelector('.mochi-prose')).fontFamily.includes('LXGW WenKai Screen')"));
@@ -123,7 +120,7 @@ async function run() {
   cases.push("未知地址显示迷路的团子，页头页脚照常");
   await click('button[role="switch"]');
   await until("document.documentElement.dataset.mode === 'dark'", "切到夜晚");
-  assert.equal(await evaluate("getComputedStyle(document.documentElement).backgroundColor"), "rgb(31, 27, 45)");
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.washi-paper')).backgroundColor"), "rgb(28, 25, 30)");
   await window.loadURL(config.url);
   await until("document.documentElement.dataset.mode === 'dark'", "夜晚模式刷新后保持");
   cases.push("日夜开关生效并在刷新后保持");

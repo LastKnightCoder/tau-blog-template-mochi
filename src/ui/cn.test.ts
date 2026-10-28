@@ -19,12 +19,15 @@ describe("cn", () => {
   });
 
   it("同属性后写胜出，不同属性互不影响", () => {
-    expect(cn("bg-paper", "bg-butter")).toBe("bg-butter");
+    expect(cn("bg-paper", "bg-wash")).toBe("bg-wash");
     expect(cn("text-ink", "text-ink-2")).toBe("text-ink-2");
-    expect(cn("text-ink-2 font-head text-[15px]", "text-accent-ink")).toBe("font-head text-[15px] text-accent-ink");
-    expect(cn("shadow-lift-s", "shadow-lift-l")).toBe("shadow-lift-l");
+    expect(cn("text-ink-2 font-body text-[15px]", "text-sakura-ink")).toBe("font-body text-[15px] text-sakura-ink");
+    expect(cn("bg-seal", "bg-ink")).toBe("bg-ink");
     expect(cn("rounded-lg", "rounded-full")).toBe("rounded-full");
     expect(cn("ease-spring", "ease-soft")).toBe("ease-soft");
-    expect(cn("border-sticker", "border-sticker-dashed")).toBe("border-sticker-dashed");
+    expect(cn("border-hair", "border-0")).toBe("border-0");
+    expect(cn("bg-transparent text-ink-2", "bg-ink text-paper")).toBe("bg-ink text-paper");
+    expect(cn("bg-ink", "bg-transparent")).toBe("bg-transparent");
+    expect(cn("text-ink", "text-current")).toBe("text-current");
   });
 });

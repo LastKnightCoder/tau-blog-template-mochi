@@ -27,7 +27,7 @@
 
 .mochi-svg .mochi-zz {
   fill: var(--mochi-ink-2);
-  font-family: var(--mochi-font-latin);
+  font-family: var(--mochi-font-num);
   animation: mochi-zz 2.4s ease-in-out infinite;
 }
 

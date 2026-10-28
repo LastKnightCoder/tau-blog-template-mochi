@@ -32,7 +32,7 @@ function BalloonToTop() {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }}
       className={cn(
-        "fixed right-6 bottom-6 z-50 w-[54px] cursor-pointer border-0 bg-transparent p-0 transition-[opacity,transform] duration-500 ease-spring",
+        "fixed right-6 bottom-6 z-50 w-[42px] cursor-pointer border-0 bg-transparent p-0 transition-[opacity,transform] duration-500 ease-soft",
         visible ? "mochi-sway" : "pointer-events-none translate-y-8 opacity-0",
         flying && "mochi-float-away",
       )}
@@ -44,8 +44,8 @@ function BalloonToTop() {
 
 export function Layout({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className="flex min-h-dvh flex-col">
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-paper focus:px-3 focus:py-1">
+    <div className="washi-paper flex min-h-dvh flex-col">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-sm focus:bg-paper-hi focus:px-3 focus:py-1">
         跳到正文
       </a>
       <Header />

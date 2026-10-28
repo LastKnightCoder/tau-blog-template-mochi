@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { click, render } from "@mochi/test-utils";
-import { Bubble, Button, Candy, Card, Chip, DayNightSwitch, Input, Note, toneForTag } from "./index";
+import { Bubble, Button, Candy, Card, Chip, DayNightSwitch, Input, toneForTag } from "./index";
 
 describe("Button", () => {
   it("默认是 type=button，不会意外提交表单", () => {
@@ -14,30 +14,30 @@ describe("Button", () => {
     expect(submit).not.toHaveBeenCalled();
   });
 
-  it("变体换底色，调用方 className 可以覆盖默认类", () => {
+  it("主按钮是店印色，调用方 className 可以覆盖默认类", () => {
     const { container } = render(
       <>
-        <Button variant="primary">主要</Button>
-        <Button variant="accent" className="bg-mint">
-          强调
+        <Button variant="primary">投喂团子</Button>
+        <Button variant="primary" className="bg-ink">
+          覆盖
         </Button>
       </>,
     );
-    const [primary, accent] = container.querySelectorAll("button");
-    expect(primary.className).toContain("bg-butter");
-    expect(accent.className).toContain("bg-mint");
-    expect(accent.className).not.toContain("bg-accent-ink");
+    const [primary, override] = container.querySelectorAll("button");
+    expect(primary.className).toContain("bg-seal");
+    expect(override.className).toContain("bg-ink");
+    expect(override.className).not.toContain("bg-seal");
   });
 
-  it("只有图标时是正方形", () => {
+  it("只有图标时是圆形", () => {
     const button = render(<Button icon="🔍" aria-label="搜索" />).container.querySelector("button")!;
-    expect(button.className).toContain("size-[42px]");
+    expect(button.className).toContain("size-9");
     expect(button.getAttribute("aria-label")).toBe("搜索");
   });
 });
 
 describe("Candy 与 Chip", () => {
-  it("糖果用 aria-pressed 表示选中", () => {
+  it("筛选胶囊用 aria-pressed 表示选中，选中时墨底反白", () => {
     const { container } = render(
       <>
         <Candy selected>全部</Candy>
@@ -46,15 +46,19 @@ describe("Candy 与 Chip", () => {
     );
     const [on, off] = container.querySelectorAll("button");
     expect(on.getAttribute("aria-pressed")).toBe("true");
-    expect(on.className).toContain("bg-pink");
+    expect(on.className).toContain("bg-ink");
+    expect(on.className).not.toContain("bg-transparent");
     expect(off.getAttribute("aria-pressed")).toBe("false");
   });
 
-  it("同一个标签永远落到同一种颜色", () => {
+  it("同一个标签永远落到同一种颜色，色点只是装饰", () => {
     expect(toneForTag("咖啡")).toBe(toneForTag("咖啡"));
     const tones = new Set(["生活", "编程", "读书", "设计", "思考", "咖啡", "Rust", "旅行"].map(toneForTag));
     expect(tones.size).toBeGreaterThan(2);
-    expect(render(<Chip tone={toneForTag("咖啡")}>#咖啡</Chip>).container.firstElementChild!.className).toContain(`bg-${toneForTag("咖啡")}`);
+    const chip = render(<Chip tone={toneForTag("咖啡")}>咖啡</Chip>).container.firstElementChild!;
+    expect(chip.textContent).toBe("咖啡");
+    expect(chip.querySelector("i")!.getAttribute("aria-hidden")).toBe("true");
+    expect(chip.querySelector("i")!.className).toContain(`bg-${toneForTag("咖啡")}`);
   });
 });
 
@@ -67,12 +71,12 @@ describe("Input", () => {
   });
 });
 
-describe("Bubble、Card 与 Note", () => {
+describe("Bubble 与 Card", () => {
   it("气泡内容变化会被读屏播报", () => {
     expect(render(<Bubble>嗨</Bubble>).container.firstElementChild!.getAttribute("role")).toBe("status");
   });
 
-  it("可交互卡片才有悬停上抬", () => {
+  it("可交互的纸才有悬停换色", () => {
     const { container } = render(
       <>
         <Card>静态</Card>
@@ -80,34 +84,23 @@ describe("Bubble、Card 与 Note", () => {
       </>,
     );
     const [still, live] = container.children;
-    expect(still.className).not.toContain("hover:shadow-sheet-hover");
-    expect(live.className).toContain("hover:shadow-sheet-hover");
-  });
-
-  it("便签的倾斜角度写在样式变量上，胶带可以去掉", () => {
-    const { container } = render(
-      <>
-        <Note tilt={2}>一</Note>
-        <Note tape={false}>二</Note>
-      </>,
-    );
-    const [tilted, plain] = container.children as unknown as HTMLElement[];
-    expect(tilted.style.getPropertyValue("--note-tilt")).toBe("2deg");
-    expect(tilted.querySelector("[aria-hidden]")).not.toBeNull();
-    expect(plain.querySelector("[aria-hidden]")).toBeNull();
+    expect(still.className).not.toContain("hover:bg-wash");
+    expect(live.className).toContain("hover:bg-wash");
   });
 });
 
 describe("DayNightSwitch", () => {
-  it("是一个开关，点击切换到另一个模式", () => {
+  it("是一个开关，点击切换到另一个模式，图标跟着换", () => {
     const change = vi.fn();
     const { container, rerender } = render(<DayNightSwitch mode="light" onChange={change} />);
     const button = container.querySelector("button")!;
     expect(button.getAttribute("role")).toBe("switch");
     expect(button.getAttribute("aria-checked")).toBe("false");
+    expect(button.querySelector("circle")).not.toBeNull();
     click(button);
     expect(change).toHaveBeenCalledWith("dark");
     rerender(<DayNightSwitch mode="dark" onChange={change} />);
     expect(button.getAttribute("aria-checked")).toBe("true");
+    expect(button.querySelector("circle")).toBeNull();
   });
 });

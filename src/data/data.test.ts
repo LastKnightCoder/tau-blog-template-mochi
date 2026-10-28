@@ -101,7 +101,7 @@ describe("页面数据", () => {
 describe("站点设置", () => {
   it("缺省时给出可用的默认值", () => {
     const settings = readSiteSettings({ title: "站", basePath: "/", fields: {} });
-    expect(settings).toMatchObject({ mascotName: "团子", mascotColor: "pink", ambient: true, description: "" });
+    expect(settings).toMatchObject({ mascotName: "团子", mascotColor: "sakura", ambient: true, description: "" });
     expect(settings.mascotLines.length).toBeGreaterThan(0);
   });
 
@@ -111,7 +111,7 @@ describe("站点设置", () => {
       basePath: "/",
       fields: { mascotColor: "rainbow", mascotLines: "  第一句 \n\n第二句\n" + "长".repeat(80), ambient: false, mascotName: "  小麻薯  " },
     });
-    expect(settings.mascotColor).toBe("pink");
+    expect(settings.mascotColor).toBe("sakura");
     expect(settings.mascotLines).toEqual(["第一句", "第二句", "长".repeat(40)]);
     expect(settings.ambient).toBe(false);
     expect(settings.mascotName).toBe("小麻薯");

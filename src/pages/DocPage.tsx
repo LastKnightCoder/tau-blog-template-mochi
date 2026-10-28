@@ -1,51 +1,41 @@
-import { Mochi } from "@mochi/mochi";
 import type { DocView, SidebarNode } from "@mochi/data/types";
 import { cn } from "@mochi/ui";
 import { Content } from "@mochi/app/Content";
-import { useChrome, usePage, usePageOf } from "@mochi/app/context";
+import { usePage, usePageOf } from "@mochi/app/context";
 import { Layout } from "@mochi/app/Layout";
 
-/** 当前页之前出现过的文档算「读过」，画成绿色脚印 */
+/** 当前页之前出现过的文档算「读过」，目录里用一粒抹茶色点标出 */
 function flatten(nodes: readonly SidebarNode[]): SidebarNode[] {
   return nodes.flatMap((node) => [node, ...flatten(node.children ?? [])]);
 }
 
-function Trail({ nodes, current, visited, depth = 0 }: { nodes: readonly SidebarNode[]; current: string; visited: Set<string>; depth?: number }) {
-  const { site } = useChrome();
+function Tree({ nodes, current, visited, depth = 0 }: { nodes: readonly SidebarNode[]; current: string; visited: Set<string>; depth?: number }) {
   return (
-    <ul className={cn("m-0 list-none p-0", depth === 0 && "relative before:absolute before:top-4 before:bottom-4 before:left-4 before:border-l-[3px] before:border-dotted before:border-ink-3 before:content-['']")}>
+    <ul className="m-0 list-none p-0">
       {nodes.map((node, index) => {
         const here = node.href === current;
         const done = node.href !== undefined && visited.has(node.href);
-        const dot = cn(
-          "absolute top-3 left-[9px] z-[1] size-3.5 rounded-full border-sticker bg-paper",
-          done && "bg-mint",
-          here && "bg-accent shadow-[0_0_0_4px_var(--mochi-pink)]",
-          !node.href && "top-[13px] h-3 w-4 rounded-[4px] bg-butter",
-        );
         return (
-          <li key={`${index}-${node.title}`} className="relative">
-            <span aria-hidden className={dot} style={{ marginLeft: depth * 12 }} />
-            {here && (
-              <span aria-hidden className="absolute -top-1 -left-2 z-[2]" style={{ marginLeft: depth * 12 }}>
-                <Mochi size={30} color={site.mascotColor} blink={false} />
-              </span>
-            )}
+          <li key={`${index}-${node.title}`}>
             {node.href ? (
               <a
                 href={node.href}
                 aria-current={here ? "page" : undefined}
-                className={cn("block py-1.5 pl-[34px] text-[14px] text-ink no-underline hover:text-accent-ink", here && "font-semibold")}
-                style={{ marginLeft: depth * 12 }}
+                className={cn(
+                  "-ml-px flex items-center gap-2 border-0 border-l border-solid border-transparent py-[5px] pr-1 text-[14px] text-ink-2 no-underline transition-colors duration-200 hover:text-ink",
+                  here && "border-seal text-ink",
+                )}
+                style={{ paddingLeft: 14 + depth * 12 }}
               >
                 {node.title}
+                {done && <i aria-label="读过" className="size-1.5 shrink-0 rounded-full bg-matcha" />}
               </a>
             ) : (
-              <span className="block py-1.5 pl-[34px] font-head text-[14px] text-ink-2" style={{ marginLeft: depth * 12 }}>
+              <span className="block pt-4 pb-1 text-[12.5px] tracking-[0.1em] text-ink-3" style={{ paddingLeft: 14 + depth * 12 }}>
                 {node.title}
               </span>
             )}
-            {node.children && <Trail nodes={node.children} current={current} visited={visited} depth={depth + 1} />}
+            {node.children && <Tree nodes={node.children} current={current} visited={visited} depth={depth + 1} />}
           </li>
         );
       })}
@@ -57,28 +47,17 @@ function PageTurn({ page, direction }: { page?: DocView["prevPage"]; direction: 
   if (!page) return <span />;
   const next = direction === "next";
   return (
-    <a
-      href={page.href}
-      rel={direction}
-      className={cn(
-        "group relative overflow-hidden rounded-[18px] border-sheet bg-cream px-4 py-3 text-ink no-underline transition-[transform,background-color] duration-[350ms] ease-spring hover:-translate-y-[3px] hover:bg-soft-butter",
-        next && "text-right",
-      )}
-    >
-      <small className="text-[12px] text-ink-2">{next ? "下一页 →" : "← 上一页"}</small>
-      <div className="font-head text-[17px]">{page.title}</div>
-      {next && (
-        <span aria-hidden className="absolute right-0 bottom-0 size-0 rounded-tl-[10px] bg-[linear-gradient(135deg,var(--mochi-soft-butter)_50%,var(--mochi-sheet-line)_50%)] transition-[width,height] duration-300 ease-spring group-hover:size-7" />
-      )}
+    <a href={page.href} rel={direction} className={cn("group block py-5 text-ink no-underline", next && "text-right")}>
+      <small className="text-[13px] text-ink-3">{next ? "下一页" : "上一页"}</small>
+      <div className="mt-1 text-[18px] transition-colors duration-200 group-hover:text-sakura-ink">{page.title}</div>
     </a>
   );
 }
 
-/** 项目文档是一本绘本：侧栏是一条寻宝小路，正文是一页一页翻的书 */
+/** 项目文档：一本小册子，左边细线目录，正文和文章同一套排版 */
 export function DocPage() {
   const doc = usePageOf("doc");
   const { result, sidebar = [], collections } = usePage();
-  const { site } = useChrome();
   const book = collections.flatMap((collection) => collection.items).find((item) => item.active);
   const all = flatten(sidebar).filter((node) => node.href);
   const position = all.findIndex((node) => node.href === doc.currentPath);
@@ -88,27 +67,21 @@ export function DocPage() {
 
   return (
     <Layout>
-      <div className="mx-auto grid max-w-[1160px] grid-cols-[250px_1fr] gap-[30px] px-9 pt-7 pb-[60px] max-lg:grid-cols-1 max-sm:px-3">
+      <div className="mx-auto grid max-w-[1120px] grid-cols-[220px_minmax(0,660px)] justify-center gap-16 px-14 pt-8 pb-24 max-lg:grid-cols-[minmax(0,680px)] max-lg:gap-10 max-md:px-6">
         {sidebar.length > 0 && (
-          <nav aria-label="文档目录" className="sticky top-5 self-start rounded-[22px] border-sheet bg-paper px-3.5 py-4 shadow-sheet max-lg:static">
-            <h2 className="mb-1.5 flex items-center gap-1.5 font-head text-[18px]">🗺️ {book?.title ?? "目录"}</h2>
-            {crumbs.length > 0 && <p className="mb-3 text-[12px] text-ink-2">{["图书馆", ...crumbs].join(" › ")}</p>}
-            <Trail nodes={sidebar} current={doc.currentPath} visited={visited} />
+          <nav aria-label="文档目录" className="sticky top-6 self-start max-lg:static">
+            <h2 className="mb-2 text-[16px] font-normal tracking-[0.06em]">{book?.title ?? "目录"}</h2>
+            <div className="border-0 border-l border-solid border-rule">
+              <Tree nodes={sidebar} current={doc.currentPath} visited={visited} />
+            </div>
           </nav>
         )}
-        <article className={cn("overflow-hidden rounded-[26px] border-sheet bg-paper shadow-sheet", sidebar.length === 0 && "col-span-full")}>
-          <header className="relative overflow-hidden mochi-cover border-b border-solid border-sheet-line px-10 pt-[26px] pb-[22px] max-sm:px-6">
-            {chapter && <p className="text-[13px] text-ink-2">{chapter}</p>}
-            <h1 className="font-head text-[34px] leading-[1.3]">{doc.title}</h1>
-            <span aria-hidden className="absolute right-10 -bottom-[26px] -rotate-[8deg] max-sm:hidden">
-              <Mochi size={110} hat="grad" color={site.mascotColor} />
-            </span>
-          </header>
-          <div className="px-10 pt-[30px] pb-2.5 max-sm:px-6">
-            <Content result={result} />
-          </div>
+        <article className={cn("min-w-0", sidebar.length === 0 && "col-span-full")}>
+          {chapter && <p className="mb-2 text-[14px] tracking-[0.08em] text-sakura-ink">{chapter}</p>}
+          <h1 className="mb-10 text-[36px] leading-[1.35] font-normal tracking-[0.04em] max-sm:text-[28px]">{doc.title}</h1>
+          <Content result={result} />
           {(doc.prevPage || doc.nextPage) && (
-            <nav aria-label="翻页" className="grid grid-cols-2 gap-4 px-10 pt-2.5 pb-[34px] max-sm:grid-cols-1 max-sm:px-6">
+            <nav aria-label="翻页" className="mt-14 grid grid-cols-2 gap-6 border-0 border-t border-solid border-rule max-sm:grid-cols-1">
               <PageTurn page={doc.prevPage} direction="prev" />
               <PageTurn page={doc.nextPage} direction="next" />
             </nav>

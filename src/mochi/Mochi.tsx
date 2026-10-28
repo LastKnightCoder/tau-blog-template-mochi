@@ -8,9 +8,9 @@ import { MOODS, type MochiAct, type MochiColor, type MochiHat, type MochiMood } 
 export const SIMPLE_BELOW = 32;
 const ACT_FALLBACK_MS = 1600;
 
-/** 描边换算到 viewBox 单位，使屏幕上的粗细接近全站 2.5px，小尺寸再加粗保证可辨 */
+/** 描边换算到 viewBox 单位：屏幕上约 1.6px 的细墨线，小尺寸加粗到可辨 */
 export function strokeWidthFor(size: number): number {
-  return Math.max(3, Math.min(7, (2.5 * 120) / size));
+  return Math.max(1.8, Math.min(5.5, (1.6 * 120) / size));
 }
 
 export interface MochiHandle {
@@ -37,7 +37,7 @@ export interface MochiProps {
 }
 
 export const Mochi = forwardRef<MochiHandle, MochiProps>(function Mochi(
-  { mood = "happy", color = "pink", hat = "none", size = 120, track = false, blink = true, onPoke, label, className, style },
+  { mood = "happy", color = "sakura", hat = "none", size = 120, track = false, blink = true, onPoke, label, className, style },
   ref,
 ) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -71,18 +71,18 @@ export const Mochi = forwardRef<MochiHandle, MochiProps>(function Mochi(
     <svg
       ref={svgRef}
       className="mochi-svg"
-      viewBox="0 0 120 100"
+      viewBox="0 0 120 104"
       data-mood={mood}
       role={name && !onPoke ? "img" : undefined}
       aria-labelledby={name && !onPoke ? titleId : undefined}
       aria-hidden={name && !onPoke ? undefined : true}
     >
       {name && !onPoke && <title id={titleId}>{name}</title>}
-      <ellipse cx={60} cy={94} rx={36} ry={4.5} fill="var(--mochi-ground)" />
+      <ellipse cx={60} cy={98} rx={34} ry={3.5} fill="var(--mochi-ground)" />
       <g className="mochi-body">
         <path d={BODY_PATH} fill={`var(--mochi-body-${color})`} {...line} />
         {!simple && (
-          <path d="M30 42q7-10 17-13" fill="none" stroke="#fff" strokeWidth={line.strokeWidth * 1.2} strokeLinecap="round" opacity={0.85} />
+          <path d="M33 43q6-9 15-12" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" opacity={0.9} />
         )}
         {!simple && <Cheeks mood={mood} />}
         <Eyes mood={mood} line={line} />

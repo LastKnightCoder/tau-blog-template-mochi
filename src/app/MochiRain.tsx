@@ -4,7 +4,7 @@ import { prefersReducedMotion } from "@mochi/mochi/motion";
 
 const DROPS = 26;
 const LIFETIME_MS = 4200;
-const COLORS: MochiColor[] = ["pink", "mint", "sky", "butter"];
+const COLORS: MochiColor[] = ["sakura", "matcha", "shiro", "kuri"];
 const MOODS: MochiMood[] = ["happy", "wink", "shy"];
 
 interface Drop {

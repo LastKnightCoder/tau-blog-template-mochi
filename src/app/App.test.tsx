@@ -49,18 +49,21 @@ async function open(route: string) {
 const text = () => document.body.textContent ?? "";
 
 describe("页面", () => {
-  it("首页：站名、三栋房子、最近寄到、站点描述", async () => {
+  it("首页：站名、团子与店印、三个分区、最近做好的", async () => {
     await open("/");
-    await settle(() => text().includes("最近寄到"), "首页");
+    await settle(() => text().includes("最近做好的"), "首页");
     expect(document.querySelector("h1")!.getAttribute("aria-label")).toBe("团子的小窝");
-    for (const name of ["邮局", "便签屋", "图书馆"]) expect(text()).toContain(name);
     expect(text()).toContain("慢慢写，慢慢长大");
-    expect(document.querySelectorAll("#mailbox-title ~ ul li")).toHaveLength(5);
+    expect(text()).toContain("今日现做");
+    const menu = [...document.querySelectorAll('nav[aria-label="分区"] h2')].map((title) => title.textContent);
+    expect(menu).toEqual(["文章", "卡片", "项目"]);
+    expect(document.querySelectorAll("#recent-title ~ ul li")).toHaveLength(6);
+    expect(document.querySelector('button[aria-label="团子，戳一下"]')).not.toBeNull();
   });
 
-  it("文章列表：信纸按标签筛选，筛选写在地址上", async () => {
+  it("文章列表：按标签筛选，筛选写在地址上", async () => {
     await open("/articles");
-    await settle(() => text().includes("邮局") && document.querySelectorAll('a[href^="/articles/"]').length === 3, "文章列表");
+    await settle(() => text().includes("写给你的长信") && document.querySelectorAll('main a[href^="/articles/"]').length === 3, "文章列表");
     const coffee = [...document.querySelectorAll<HTMLButtonElement>("button[aria-pressed]")].find((button) => button.textContent === "咖啡")!;
     await act(async () => coffee.click());
     await settle(() => document.querySelectorAll('main a[href^="/articles/"]').length === 1, "筛选后只剩一封");
@@ -76,23 +79,27 @@ describe("页面", () => {
     expect(document.querySelector('.mochi-prose a.mochi-link[href="/cards/1"]')).not.toBeNull();
   });
 
-  it("卡片列表：标签罐子筛选子标签", async () => {
+  it("卡片列表：一盒点心格，按子标签筛选", async () => {
     await open("/cards?tag=%E6%80%9D%E8%80%83%2F%E5%AD%A6%E4%B9%A0");
-    await settle(() => text().includes("「思考/学习」罐子里有 2 张便签"), "按子标签筛选");
+    await settle(() => text().includes("「思考/学习」下有 2 张卡片"), "按子标签筛选");
+    expect(document.querySelectorAll("main ul.grid > li")).toHaveLength(2);
+    const pressed = document.querySelector('[role="group"] button[aria-pressed="true"]')!;
+    expect(pressed.textContent).toContain("思考 / 学习");
   });
 
-  it("卡片详情：正文与红线连着的便签", async () => {
+  it("卡片详情：正文与连着的卡片", async () => {
     await open("/cards/1");
-    await settle(() => text().includes("用红线连着的便签") && text().includes("费曼学习法"), "卡片详情");
-    expect(document.querySelectorAll("[data-yarn-end]")).toHaveLength(2);
+    await settle(() => text().includes("连着的卡片") && text().includes("费曼学习法"), "卡片详情");
+    expect(document.querySelectorAll('aside[aria-labelledby="linked-title"] li')).toHaveLength(2);
   });
 
-  it("项目文档：寻宝小路标出当前页与读过的页，翻页指向前后文档", async () => {
+  it("项目文档：细线目录标出当前页与读过的页，翻页指向前后文档", async () => {
     await open("/projects/12/34");
     await settle(() => text().includes("卡片与双链") && !!document.querySelector('nav[aria-label="文档目录"]'), "文档页");
     expect(document.querySelector('nav[aria-label="文档目录"] a[aria-current="page"]')!.textContent).toBe("卡片与双链");
     expect(document.querySelector('a[rel="prev"]')!.getAttribute("href")).toBe("/projects/12/33");
     expect(document.querySelector('a[rel="next"]')!.getAttribute("href")).toBe("/projects/12/35");
+    expect(document.querySelectorAll('nav[aria-label="文档目录"] [aria-label="读过"]')).toHaveLength(1);
   });
 
   it("未知地址：迷路的团子，页头保留", async () => {
@@ -106,9 +113,9 @@ describe("页面", () => {
 describe("导航与交互", () => {
   it("站内跳转不重载页面，导航高亮当前分区", async () => {
     await open("/");
-    await settle(() => text().includes("最近寄到"), "首页");
+    await settle(() => text().includes("最近做好的"), "首页");
     await act(async () => navigate("/cards"));
-    await settle(() => text().includes("便签屋") && text().includes("墙上钉着"), "卡片列表");
+    await settle(() => text().includes("一盒随手记下的小想法"), "卡片列表");
     expect(document.querySelector('nav[aria-label="主导航"] a[aria-current="page"]')!.textContent).toBe("卡片");
   });
 
@@ -120,7 +127,7 @@ describe("导航与交互", () => {
       this.open = false;
     };
     await open("/");
-    await settle(() => text().includes("最近寄到"), "首页");
+    await settle(() => text().includes("最近做好的"), "首页");
     await act(async () => {
       window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
     });
@@ -148,19 +155,15 @@ describe("导航与交互", () => {
   });
 });
 
-describe("首页小屋", () => {
-  it("三栋绘本小屋各有自己的样子，门里藏着团子，新内容有角标", async () => {
+describe("首页分区", () => {
+  it("七天内的新内容在分区上标出数量", async () => {
     // 夹具按 2026-10-28 生成，「7 天内新内容」要在同一天判断
     vi.useFakeTimers({ toFake: ["Date"], now: Date.UTC(2026, 9, 28, 2) });
     await open("/");
-    await settle(() => text().includes("最近寄到"), "首页");
-    const houses = [...document.querySelectorAll<HTMLAnchorElement>("main a.group")].filter((link) => link.querySelector("svg[aria-hidden] path"));
-    expect(houses.map((house) => house.querySelector(":scope > div:last-child")!.firstChild!.textContent)).toEqual(["邮局", "便签屋", "图书馆"]);
-    const drawings = houses.map((house) => house.querySelector("svg")!.innerHTML);
-    expect(new Set(drawings).size).toBe(3);
-    for (const house of houses) expect(house.querySelector(".bg-ink svg.mochi-svg")).not.toBeNull();
-    expect(houses[0].getAttribute("href")).toBe("/articles");
-    expect(houses[0].textContent).toContain("篇新内容");
+    await settle(() => text().includes("最近做好的"), "首页");
+    const articles = document.querySelector<HTMLAnchorElement>('nav[aria-label="分区"] a[href="/articles"]')!;
+    expect(articles.textContent).toContain("新到 1 篇");
+    expect(articles.querySelector("svg")).not.toBeNull();
     vi.useRealTimers();
   });
 });

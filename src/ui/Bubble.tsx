@@ -8,16 +8,16 @@ export interface BubbleProps extends HTMLAttributes<HTMLDivElement> {
   tailAlign?: "start" | "center";
 }
 
-/** 团子说话用的气泡；内容变化时读屏会播报 */
+/** 团子说话用的小纸条；内容变化时读屏会播报 */
 export function Bubble({ tail = "bottom", tailAlign = "start", className, ...rest }: BubbleProps) {
   return (
     <div
       role="status"
       className={cn(
-        "relative inline-block rounded-[18px] border-sticker bg-paper px-3.5 py-2 text-[15px] text-ink shadow-lift-s",
+        "relative inline-block rounded-md border-hair bg-paper-hi px-3.5 py-1.5 text-[14px] text-ink-2 shadow-float",
         tail === "bottom" &&
-          "after:absolute after:-bottom-[9px] after:size-3.5 after:rotate-45 after:border-solid after:border-line after:border-t-0 after:border-l-0 after:border-r-[length:var(--mochi-stroke)] after:border-b-[length:var(--mochi-stroke)] after:bg-paper after:content-['']",
-        tail === "bottom" && (tailAlign === "center" ? "after:left-1/2 after:-ml-[7px]" : "after:left-6"),
+          "after:absolute after:-bottom-[5px] after:size-2.5 after:rotate-45 after:border-r after:border-b after:border-solid after:border-rule after:bg-paper-hi after:content-['']",
+        tail === "bottom" && (tailAlign === "center" ? "after:left-1/2 after:-ml-[5px]" : "after:left-5"),
         className,
       )}
       {...rest}

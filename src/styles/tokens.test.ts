@@ -44,11 +44,9 @@ function contrast(a: string, b: string) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-const FILLS = [
-  "pink", "mint", "butter", "sky", "lilac", "peach", "cork", "hill",
-  "soft-pink", "soft-mint", "soft-butter", "soft-sky", "soft-lilac", "soft-peach", "meadow", "horizon",
-];
-const BODIES = ["pink", "mint", "sky", "butter"];
+/** 会放文字的底色：纸、淡洗与三种淡底 */
+const TEXT_GROUNDS = ["paper", "paper-hi", "wash", "tint-sakura", "tint-matcha", "tint-kuri"];
+const BODIES = ["sakura", "matcha", "shiro", "kuri"];
 const MODES = ["light", "dark"] as const;
 
 describe("--tau-* 桥接", () => {
@@ -65,35 +63,33 @@ describe("--tau-* 桥接", () => {
 describe("对比度（WCAG 2.1）", () => {
   for (const mode of MODES) {
     const read = palette(mode);
+    const grounds = TEXT_GROUNDS.map((name) => read(`--mochi-${name}`));
 
-    it(`${mode}：墨色与次要墨在底色和所有填充色上 ≥ 4.5`, () => {
-      const backgrounds = ["cream", "paper", ...FILLS].map((name) => read(`--mochi-${name}`));
-      for (const ink of ["--mochi-ink", "--mochi-ink-2"]) {
-        for (const bg of backgrounds) expect(contrast(read(ink), bg), `${ink} on ${bg}`).toBeGreaterThanOrEqual(4.5);
+    it(`${mode}：墨色、次要墨与带色文字在所有文字底色上 ≥ 4.5`, () => {
+      for (const ink of ["--mochi-ink", "--mochi-ink-2", "--mochi-sakura-ink", "--mochi-matcha-ink"]) {
+        for (const bg of grounds) expect(contrast(read(ink), bg), `${ink} on ${bg}`).toBeGreaterThanOrEqual(4.5);
       }
     });
 
-    it(`${mode}：强调文字与按钮文字 ≥ 4.5`, () => {
-      expect(contrast(read("--mochi-accent-ink"), read("--mochi-paper"))).toBeGreaterThanOrEqual(4.5);
-      expect(contrast(read("--mochi-accent-ink"), read("--mochi-cream"))).toBeGreaterThanOrEqual(4.5);
-      expect(contrast(read("--mochi-on-accent"), read("--mochi-accent-ink"))).toBeGreaterThanOrEqual(4.5);
+    it(`${mode}：店印上的字与代码 ≥ 4.5`, () => {
+      expect(contrast(read("--mochi-on-seal"), read("--mochi-seal"))).toBeGreaterThanOrEqual(4.5);
       expect(contrast(read("--mochi-code-ink"), read("--mochi-code"))).toBeGreaterThanOrEqual(4.5);
     });
 
-    it(`${mode}：描边与强调图形对底色 ≥ 3`, () => {
-      for (const bg of ["--mochi-cream", "--mochi-paper"]) {
-        expect(contrast(read("--mochi-line"), read(bg))).toBeGreaterThanOrEqual(3);
-        expect(contrast(read("--mochi-accent"), read(bg))).toBeGreaterThanOrEqual(3);
+    it(`${mode}：店印与淡墨作为图形对纸面 ≥ 3`, () => {
+      for (const bg of ["--mochi-paper", "--mochi-paper-hi"]) {
+        expect(contrast(read("--mochi-seal"), read(bg))).toBeGreaterThanOrEqual(3);
+        expect(contrast(read("--mochi-ink-3"), read(bg))).toBeGreaterThanOrEqual(3);
       }
     });
 
-    it(`${mode}：团子五官在每种身体颜色上 ≥ 4.5`, () => {
+    it(`${mode}：团子五官在每种口味上 ≥ 4.5`, () => {
       for (const body of BODIES) {
         expect(contrast(read("--mochi-face"), read(`--mochi-body-${body}`))).toBeGreaterThanOrEqual(4.5);
       }
     });
 
-    it(`${mode}：正文用的状态色在纸面和对应浅底上 ≥ 4.5`, () => {
+    it(`${mode}：正文用的状态色在纸面和对应淡底上 ≥ 4.5`, () => {
       for (const [ink, soft] of [
         ["--tau-ok", "--tau-ok-soft"],
         ["--tau-warn", "--tau-warn-soft"],

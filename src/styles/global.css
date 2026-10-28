@@ -11,20 +11,21 @@
 
 @layer base {
   html {
-    background: var(--mochi-cream);
     color: var(--mochi-ink);
     font-family: var(--mochi-font-body);
     -webkit-font-smoothing: antialiased;
+    font-feature-settings: "palt" 0;
   }
 
   ::selection {
-    background: var(--mochi-butter);
+    background: var(--mochi-tint-sakura);
     color: var(--mochi-ink);
   }
 
   :focus-visible {
-    outline: 3px dashed var(--mochi-accent);
+    outline: 2px solid var(--mochi-seal);
     outline-offset: 3px;
+    border-radius: 2px;
   }
 }
 

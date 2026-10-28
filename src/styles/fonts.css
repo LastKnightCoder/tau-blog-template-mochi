@@ -1,12 +1,6 @@
-/* 字体都按 unicode-range 切片，浏览器只下载页面上出现的字 */
 /*
- * 站酷快乐体只用于标题和按钮，用简体整字库单文件：切片版有 93 个文件，
- * 加上正文渲染器自带的约 360 个文件会超过插件中心每包 512 个文件的上限。
+ * 全站只用一套中文字体：霞鹜文楷屏幕阅读版（大陆规范字形），按 unicode-range 切片，
+ * 浏览器只下载页面上出现的字。数字用系统衬线，不另带字体文件。
  */
-@import "@fontsource/zcool-kuaile/chinese-simplified-400.css";
-@import "@fontsource/zcool-kuaile/latin-400.css";
-@import "@fontsource/baloo-2/latin-500.css";
-@import "@fontsource/baloo-2/latin-700.css";
-@import "@fontsource/jetbrains-mono/latin-400.css";
-/* 大陆规范字形版；包自带的 style.css 会同时引入另外三套变体 */
 @import "lxgw-wenkai-screen-webfont/lxgwwenkaigbscreen.css";
+@import "@fontsource/jetbrains-mono/latin-400.css";

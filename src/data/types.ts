@@ -11,7 +11,7 @@ export interface SiteSettings {
   basePath: string;
   description: string;
   mascotName: string;
-  mascotColor: "pink" | "mint" | "sky" | "butter";
+  mascotColor: "sakura" | "matcha" | "shiro" | "kuri";
   /** 戳团子时轮流说的话 */
   mascotLines: string[];
   /** 云、烟、蜗牛等常驻动画 */

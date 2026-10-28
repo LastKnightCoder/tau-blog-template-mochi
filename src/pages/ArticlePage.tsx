@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { OutlineHeading } from "@tau/blog";
+import { Mochi } from "@mochi/mochi";
 import { joinBase } from "@mochi/data/routes";
 import { Bubble, Chip, toneForTag } from "@mochi/ui";
 import { Content } from "@mochi/app/Content";
@@ -12,64 +13,72 @@ import { scrollToHeading, useReading } from "./reading";
 
 const BURP_MS = 2400;
 
-/** 文章是一张活页手帐纸：左侧打孔、顶部两条和纸胶带，正文本身保持清爽 */
+/** 文章页：宽页边，左边目录，右边页边上一只打盹的团子，读完会醒 */
 export function ArticlePage() {
   const article = usePageOf("article");
   const { result, key } = usePage();
   const { site } = useChrome();
-  const sheet = useRef<HTMLElement>(null);
+  const body = useRef<HTMLElement>(null);
   const [headings, setHeadings] = useState<OutlineHeading[]>([]);
-  const reading = useReading(sheet, headings.length);
+  const reading = useReading(body, headings.length);
   const minutes = useMemo(() => readingMinutes(article.content), [article.content]);
-  const [burp, setBurp] = useState(false);
+  const [thanks, setThanks] = useState(false);
 
-  // 读完一篇，团子打个嗝说谢谢
+  // 读完一篇，页边的团子醒过来说谢谢
   useEffect(() => {
-    if (!reading.finished || headings.length === 0) return;
-    setBurp(true);
-    const timer = setTimeout(() => setBurp(false), BURP_MS);
+    if (!reading.finished) return;
+    setThanks(true);
+    const timer = setTimeout(() => setThanks(false), BURP_MS);
     return () => clearTimeout(timer);
-  }, [reading.finished, headings.length]);
+  }, [reading.finished]);
 
   return (
     <Layout>
-      <div className="mx-auto grid max-w-[1040px] grid-cols-[1fr_210px] gap-[34px] px-10 pt-[34px] pb-20 max-xl:grid-cols-1 max-sm:px-3">
-        <article ref={sheet} className="mochi-sheet relative rounded-[6px_22px_22px_6px] border-sheet bg-paper pt-11 pr-[54px] pb-[50px] pl-[70px] shadow-sheet max-sm:px-6 max-sm:pl-10">
-          <span aria-hidden className="mochi-washi absolute -top-3.5 left-[60px] h-[30px] w-[120px] -rotate-[4deg]" />
-          <span aria-hidden className="mochi-washi mochi-washi-mint absolute -top-3.5 right-[50px] h-[30px] w-[120px] rotate-[5deg]" />
-          {article.bannerBg && <img src={article.bannerBg} alt="" className="mb-6 max-h-[360px] w-full rounded-md border-sheet object-cover" />}
-          <p className="flex flex-wrap items-center gap-2.5 text-[13px] text-ink-2">
+      <div className="mx-auto grid max-w-[1120px] grid-cols-[150px_minmax(0,660px)_1fr] gap-12 px-14 pt-8 pb-24 max-xl:grid-cols-[minmax(0,680px)] max-xl:justify-center max-md:px-6">
+        {headings.length > 0 ? (
+          <Outline
+            headings={headings}
+            active={reading.active}
+            progress={reading.progress}
+            finished={reading.finished}
+            color={site.mascotColor}
+            onSelect={(index) => scrollToHeading(body.current, index)}
+          />
+        ) : (
+          <span className="max-xl:hidden" />
+        )}
+        <article ref={body} className="min-w-0">
+          {article.bannerBg && <img src={article.bannerBg} alt="" className="mb-9 max-h-[360px] w-full rounded-sm object-cover" />}
+          <h1 className="text-[40px] leading-[1.35] font-normal tracking-[0.04em] max-sm:text-[30px]">{article.title}</h1>
+          <p className="mt-4 mb-10 flex flex-wrap gap-x-[18px] gap-y-1 text-[14px] text-ink-2">
             {article.author && <span>{article.author}</span>}
             <time dateTime={new Date(article.createTime).toISOString()}>{longDate(article.createTime)}</time>
             <span>约 {minutes} 分钟</span>
           </p>
-          <h1 className="mt-3.5 mb-[22px] font-head text-[40px] leading-[1.3] max-sm:text-[30px]">{article.title}</h1>
           <Content result={result} onOutline={setHeadings} />
-          {article.tags.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-2">
-              {article.tags.map((tag) => (
-                <a key={tag} href={`${joinBase(site.basePath, "/articles")}?tag=${encodeURIComponent(tag)}`} className="no-underline">
-                  <Chip tone={toneForTag(tag)}>#{tag}</Chip>
-                </a>
-              ))}
-            </div>
-          )}
-          <Reactions contentKey={key} />
-          {article.updateTime !== article.createTime && <p className="mt-2.5 text-center text-[12px] text-ink-2">最后更新于 {longDate(article.updateTime)}</p>}
+          <footer className="mt-14 flex flex-wrap items-center gap-x-5 gap-y-4 border-0 border-t border-solid border-rule pt-7">
+            <Reactions contentKey={key} />
+            {article.tags.length > 0 && (
+              <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-1 p-0">
+                {article.tags.map((tag) => (
+                  <li key={tag}>
+                    <a href={`${joinBase(site.basePath, "/articles")}?tag=${encodeURIComponent(tag)}`} className="no-underline hover:[&_span]:text-ink">
+                      <Chip tone={toneForTag(tag)}>{tag}</Chip>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {article.updateTime !== article.createTime && <p className="ml-auto text-[13px] text-ink-3">最后更新于 {longDate(article.updateTime)}</p>}
+          </footer>
         </article>
-        {headings.length > 0 && (
-          <div className="relative">
-            {burp && <Bubble className="absolute -top-12 left-0 z-10 whitespace-nowrap">嗝～谢谢投喂！</Bubble>}
-            <Outline
-              headings={headings}
-              active={reading.active}
-              progress={reading.progress}
-              finished={reading.finished}
-              color={site.mascotColor}
-              onSelect={(index) => scrollToHeading(sheet.current, index)}
-            />
+        <aside aria-hidden className="sticky top-8 self-start pt-20 max-xl:hidden">
+          <div className="relative w-[84px]">
+            {thanks && <Bubble className="absolute -top-11 left-0 whitespace-nowrap">谢谢投喂～</Bubble>}
+            <Mochi size={84} mood={reading.finished ? "shy" : "sleepy"} color={site.mascotColor} blink={false} />
           </div>
-        )}
+          <p className="mt-2 max-w-[140px] text-[13px] text-ink-3">{reading.finished ? `${site.mascotName}醒了。` : `${site.mascotName}在页边打盹，读完会醒。`}</p>
+        </aside>
       </div>
     </Layout>
   );

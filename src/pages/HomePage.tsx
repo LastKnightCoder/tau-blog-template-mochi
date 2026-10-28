@@ -1,106 +1,151 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Mochi, type MochiHandle, type MochiMood } from "@mochi/mochi";
 import { useIdle } from "@mochi/mochi/useIdle";
 import { joinBase } from "@mochi/data/routes";
 import type { HomeView, Linked } from "@mochi/data/types";
 import type * as Published from "@tau/blog";
-import { Bubble, Chip, cn, KIND_TONES } from "@mochi/ui";
+import { Bubble } from "@mochi/ui";
 import { useChrome, usePageOf } from "@mochi/app/context";
 import { isFresh, shortDate, truncate } from "@mochi/app/format";
-import { Cloud } from "@mochi/app/scenery";
-import { greeting, useMode } from "@mochi/app/theme";
+import { useMode } from "@mochi/app/theme";
 import { Layout } from "@mochi/app/Layout";
-import { Bush, Lamp, LIBRARY, NOTE_SHOP, POST_OFFICE, Tree, type Building } from "./houses";
+import { BookIcon, CardIcon, LetterIcon } from "./icons";
 
-const RECENT_LIMIT = 5;
+const RECENT_LIMIT = 6;
 const SLEEP_AFTER_MS = 40_000;
-const KIND_LABEL = { article: "信", card: "签", doc: "书" } as const;
+const KIND_LABEL = { article: "文章", card: "卡片", doc: "文档" } as const;
 
-interface HouseProps {
-  href: string;
-  name: string;
-  count: string;
-  building: Building;
-  fresh: number;
-  peek: MochiMood;
-}
-
-const percent = (value: number, total: number) => `${(value / total) * 100}%`;
-
-/** 绘本小屋：悬停时整栋上抬，门向内打开，团子从门里探出头 */
-function House({ href, name, count, building, fresh, peek }: HouseProps) {
+/** 首页主角：坐在樱色圆上的团子，身旁一块竖排招牌和一枚店印 */
+function Mascot() {
   const { site } = useChrome();
-  const { width, height, door } = building;
+  const mode = useMode();
+  const mochi = useRef<MochiHandle>(null);
+  const pokes = useRef(0);
+  const idle = useIdle(SLEEP_AFTER_MS);
+  const [line, setLine] = useState<string | null>(null);
+  const [dizzy, setDizzy] = useState(false);
+  const sleeping = idle || mode === "dark";
+  const mood: MochiMood = dizzy ? "dizzy" : sleeping ? "sleepy" : "happy";
+  const said = idle ? "Zzz……" : line;
+
+  const poke = () => {
+    pokes.current += 1;
+    if (pokes.current % 10 === 0) {
+      setDizzy(true);
+      setLine("被戳晕了……");
+      setTimeout(() => setDizzy(false), 2000);
+      return;
+    }
+    setLine(site.mascotLines[pokes.current % site.mascotLines.length]);
+  };
+
   return (
-    <a href={href} className="group relative block w-[150px] shrink-0 text-center text-ink no-underline max-lg:w-[130px]">
-      {fresh > 0 && (
-        <span className="mochi-bob absolute -top-1.5 -right-2 z-10 rounded-full border-sticker bg-accent-ink px-2.5 py-0.5 font-head text-[13px] text-on-accent">
-          +{fresh}
-          <span className="sr-only"> 篇新内容</span>
-        </span>
-      )}
-      <div className="relative transition-transform duration-[450ms] ease-spring group-hover:-translate-y-2 group-hover:-rotate-[1.5deg]" style={{ aspectRatio: `${width} / ${height}` }}>
-        <svg viewBox={`0 0 ${width} ${height}`} aria-hidden className="absolute inset-0 size-full overflow-visible">
-          {building.draw({ smoke: site.ambient })}
-        </svg>
-        <div
-          className="absolute overflow-hidden bg-ink"
-          style={{
-            left: percent(door.x, width),
-            top: percent(door.y, height),
-            width: percent(door.width, width),
-            height: percent(door.height, height),
-            borderRadius: "999px 999px 0 0",
-          }}
-        >
-          <span className="absolute inset-x-0 bottom-[-6%] flex translate-y-[70%] justify-center transition-transform delay-75 duration-[450ms] ease-spring group-hover:translate-y-[12%]">
-            {/* 宽度按门的比例走，门随房子缩放时团子跟着变 */}
-            <Mochi mood={peek} size={34} color={site.mascotColor} blink={false} style={{ width: "118%" }} />
-          </span>
-          <span
-            className={cn(
-              "absolute inset-0 origin-left rounded-[inherit] border-sticker border-b-0 transition-transform duration-[450ms] ease-spring group-hover:[transform:perspective(160px)_rotateY(-72deg)]",
-              building.doorTone,
-            )}
-          >
-            <i className="absolute top-[58%] right-[18%] size-1 rounded-full bg-ink" />
-          </span>
-        </div>
+    <div className="relative mx-auto aspect-square w-full max-w-[360px]">
+      <span aria-hidden className="mochi-halo absolute inset-0 rounded-full" />
+      <div className="absolute inset-x-0 top-[14%] flex flex-col items-center gap-3">
+        <div className="flex h-9 items-end">{said && <Bubble tailAlign="center">{said}</Bubble>}</div>
+        <Mochi
+          ref={mochi}
+          mood={mood}
+          size={220}
+          color={site.mascotColor}
+          hat={mode === "dark" ? "night" : "none"}
+          track={site.ambient}
+          blink={site.ambient}
+          onPoke={poke}
+          label={`${site.mascotName}，戳一下`}
+        />
       </div>
-      <div className="mt-2 font-head text-[20px]">
-        {name}
-        <small className="block font-body text-[13px] text-ink-2">{count}</small>
-      </div>
-    </a>
+      <span className="absolute top-[20%] -right-1.5 rounded-xs border-hair bg-paper px-1.5 py-3.5 text-[14px] tracking-[0.3em] text-ink-2 [writing-mode:vertical-rl]">
+        {sleeping ? "打烊中" : "今日现做"}
+      </span>
+      <span
+        aria-hidden
+        className="absolute bottom-[10%] left-[6%] grid size-16 -rotate-[8deg] place-items-center rounded-[12px] bg-seal text-center text-[15px] leading-tight tracking-[0.1em] text-on-seal shadow-[inset_0_0_0_3px_var(--mochi-paper),inset_0_0_0_4px_var(--mochi-seal)]"
+      >
+        {[...site.mascotName].slice(0, 2).join("")}
+        <br />
+        之印
+      </span>
+    </div>
   );
 }
 
-function Mailbox({ items }: { items: Array<Linked<Published.TimelineItem>> }) {
-  const anyFresh = items.some((item) => isFresh(item.publishTime));
+function Counts({ home }: { home: HomeView }) {
+  const items: Array<[number, string]> = [
+    [home.stats.articles, "篇文章"],
+    [home.stats.cards, "张卡片"],
+    [home.docStats.projects, "个项目"],
+  ];
   return (
-    <section aria-labelledby="mailbox-title" className="self-stretch rounded-lg border-sheet bg-paper px-4 pt-3.5 pb-2.5 shadow-sheet">
-      <h2 id="mailbox-title" className="mb-1.5 flex items-center gap-1.5 font-head text-[18px]">
-        <span aria-hidden className={cn("inline-block h-5 w-3 origin-bottom rounded-[2px] border-2 border-solid border-line bg-accent", anyFresh && "mochi-flag")} />
-        最近寄到
+    <dl className="mt-9 flex gap-9">
+      {items.map(([count, unit]) => (
+        <div key={unit} className="flex flex-col-reverse">
+          <dt className="text-[14px] text-ink-2">{unit}</dt>
+          <dd className="m-0 font-num text-[30px] leading-[1.1] text-ink">{count}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+interface MenuItem {
+  href: string;
+  title: string;
+  line: string;
+  icon: ReactNode;
+  fresh: number;
+}
+
+/** 三个分区是一张横向的菜单，用竖线隔开 */
+function Menu({ items }: { items: MenuItem[] }) {
+  if (!items.length) return null;
+  return (
+    <nav
+      aria-label="分区"
+      className="mt-6 grid border-t border-solid border-rule max-md:!grid-cols-1"
+      style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+    >
+      {items.map((item) => (
+        <a
+          key={item.href}
+          href={item.href}
+          className="group relative block border-0 border-r border-solid border-rule px-7 pt-7 pb-8 text-ink no-underline transition-colors duration-300 ease-soft last:border-r-0 hover:bg-wash max-md:border-r-0 max-md:border-b max-md:px-1"
+        >
+          {item.fresh > 0 && <span className="absolute top-7 right-7 text-[13px] text-sakura-ink max-md:right-1">新到 {item.fresh} 篇</span>}
+          <span className="mb-3.5 block w-[58px] transition-transform duration-500 ease-spring group-hover:-translate-y-1 group-hover:-rotate-[4deg]">{item.icon}</span>
+          <h2 className="text-[22px] font-normal tracking-[0.08em]">{item.title}</h2>
+          <p className="mt-1 text-[14px] text-ink-2">{item.line}</p>
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+function Recent({ items }: { items: Array<Linked<Published.TimelineItem>> }) {
+  return (
+    <section aria-labelledby="recent-title" className="mt-14">
+      <h2 id="recent-title" className="mb-3 text-[15px] font-normal tracking-[0.1em] text-ink-2">
+        最近做好的
       </h2>
       {items.length === 0 ? (
-        <p className="py-4 text-[14px] text-ink-2">邮箱还空着，等第一封信。</p>
+        <p className="border-t border-solid border-rule py-6 text-ink-2">还没有发布内容。在 Tau 里写好一篇，发布后会出现在这里。</p>
       ) : (
-        <ul className="m-0 list-none p-0">
+        <ul className="m-0 list-none border-t border-solid border-rule p-0">
           {items.map((item) => (
             <li key={item.target.key}>
               <a
                 href={item.href}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md px-2 py-[7px] text-[14px] text-ink no-underline transition-[background-color,transform] duration-300 ease-spring hover:translate-x-1 hover:-rotate-[.6deg] hover:bg-soft-pink"
+                className="group grid grid-cols-[70px_1fr_auto] items-baseline gap-[18px] border-0 border-b border-dotted border-rule py-3.5 text-[16px] text-ink no-underline"
               >
-                <Chip tone={KIND_TONES[item.type]}>{KIND_LABEL[item.type]}</Chip>
-                <span className="truncate">
-                  {isFresh(item.publishTime) && <span aria-label="新">🆕 </span>}
-                  {truncate(item.title || item.summary, 28)}
-                </span>
-                <time dateTime={new Date(item.publishTime).toISOString()} className="text-[12px] text-ink-2">
+                <time dateTime={new Date(item.publishTime).toISOString()} className="font-num text-[13.5px] text-ink-2">
                   {shortDate(item.publishTime)}
                 </time>
+                <span className="truncate transition-colors duration-200 group-hover:text-sakura-ink">
+                  {truncate(item.title || item.summary, 40)}
+                  {isFresh(item.publishTime) && <span className="ml-2.5 text-[12.5px] text-sakura-ink">新</span>}
+                </span>
+                <span className="text-[12.5px] text-ink-3">{KIND_LABEL[item.type]}</span>
               </a>
             </li>
           ))}
@@ -110,115 +155,43 @@ function Mailbox({ items }: { items: Array<Linked<Published.TimelineItem>> }) {
   );
 }
 
-function Hero({ home }: { home: HomeView }) {
-  const { site } = useChrome();
-  const mode = useMode();
-  const mochi = useRef<MochiHandle>(null);
-  const pokes = useRef(0);
-  const idle = useIdle(SLEEP_AFTER_MS);
-  const [line, setLine] = useState(`嗨，我是${site.mascotName}，戳戳我也可以哦～`);
-  const [dizzy, setDizzy] = useState(false);
-  const mood: MochiMood = dizzy ? "dizzy" : idle || mode === "dark" ? "sleepy" : "happy";
-  const bubble = idle ? "Zzz……（动一动叫醒我）" : mode === "dark" ? "天黑啦，我戴上睡帽了～" : line;
-
-  const poke = () => {
-    pokes.current += 1;
-    if (pokes.current % 10 === 0) {
-      setDizzy(true);
-      setLine("@_@ 被戳晕了……");
-      setTimeout(() => setDizzy(false), 2000);
-      return;
-    }
-    setLine(site.mascotLines[pokes.current % site.mascotLines.length]);
-  };
-
-  return (
-    <div className="relative z-10 grid grid-cols-[1.1fr_.9fr] gap-10 px-14 pt-11 max-md:grid-cols-1 max-md:px-6">
-      <div>
-        <span className="inline-flex items-center gap-2 rounded-full border-sheet bg-paper/80 px-3 py-0.5 text-[13px]">
-          {greeting()} · 欢迎来到我的小镇
-        </span>
-        <h1 className="mt-[18px] mb-1.5 flex flex-wrap font-head text-[64px] leading-[1.1] max-sm:text-[44px]" aria-label={site.title}>
-          {[...site.title].map((char, index) => (
-            <span
-              key={index}
-              aria-hidden
-              className="mochi-char-in inline-block transition-[transform,color] duration-500 ease-spring hover:-translate-y-3.5 hover:-rotate-[8deg] hover:scale-110 hover:text-accent-ink"
-              style={{ animationDelay: `${0.1 + index * 0.08}s` }}
-            >
-              {char}
-            </span>
-          ))}
-        </h1>
-        {site.description && <p className="mt-5 max-w-[420px] text-[17px] leading-[1.9]">{site.description}</p>}
-        <dl className="mt-[22px] flex flex-wrap gap-2.5">
-          {[
-            [home.stats.articles, "封信"],
-            [home.stats.cards, "张便签"],
-            [home.docStats.projects, "本绘本"],
-          ].map(([count, unit]) => (
-            <div key={unit} className="flex items-baseline gap-0.5 rounded-sm border-[1.5px] border-dashed border-ink-3 bg-paper/80 px-3 py-1 text-[14px] text-ink-2">
-              <dt className="sr-only">{unit}</dt>
-              <dd className="m-0 font-latin text-[20px] font-bold text-ink">{count}</dd>
-              <span aria-hidden>{unit}</span>
-            </div>
-          ))}
-        </dl>
-      </div>
-      {/* 气泡与团子同一列居中，尾巴始终指着团子 */}
-      <div className="flex flex-col items-center justify-end gap-4 max-md:hidden">
-        <Bubble tailAlign="center" className="max-w-[300px] text-center">
-          {bubble}
-        </Bubble>
-        <Mochi
-          ref={mochi}
-          mood={mood}
-          size={200}
-          color={site.mascotColor}
-          hat={mode === "dark" ? "night" : "none"}
-          track
-          onPoke={poke}
-          label={`${site.mascotName}，戳一下`}
-        />
-      </div>
-    </div>
-  );
-}
-
 export function HomePage() {
   const home = usePageOf("home");
   const { site, collections, navigation } = useChrome();
   const has = (kind: string) => navigation.some((item) => item.kind === kind);
-  const freshCount = (type: Published.TimelineItem["type"]) => home.timeline.filter((item) => item.type === type && isFresh(item.publishTime)).length;
+  const fresh = (type: Published.TimelineItem["type"]) => home.timeline.filter((item) => item.type === type && isFresh(item.publishTime)).length;
   const firstBook = collections[0]?.items[0];
+  const menu: MenuItem[] = [
+    ...(has("articles")
+      ? [{ href: joinBase(site.basePath, "/articles"), title: "文章", line: `写给你的长信，${home.stats.articles} 篇`, icon: <LetterIcon />, fresh: fresh("article") }]
+      : []),
+    ...(has("cards")
+      ? [{ href: joinBase(site.basePath, "/cards"), title: "卡片", line: `随手记下的小想法，${home.stats.cards} 张`, icon: <CardIcon />, fresh: fresh("card") }]
+      : []),
+    ...(firstBook
+      ? [{ href: firstBook.href, title: "项目", line: `一本本做完的小册子，${home.docStats.projects} 本`, icon: <BookIcon />, fresh: fresh("doc") }]
+      : []),
+  ];
 
   return (
-    <Layout className="mochi-sky overflow-hidden">
-      {site.ambient && (
-        <>
-          <Cloud width={110} top={40} duration={60} delay={-20} />
-          <Cloud width={80} top={120} duration={80} delay={-55} />
-        </>
-      )}
-      <span aria-hidden className="mochi-sun absolute top-6 right-9 size-[70px] rounded-full border-sticker" />
-      <span aria-hidden className="mochi-meadow absolute inset-x-[-10%] top-[360px] bottom-0 rounded-[50%_50%_0_0/90px_90px_0_0] border-t-[1.5px] border-solid border-sheet-line" />
-      <Hero home={home} />
-      <div className="relative z-10 flex items-end gap-10 px-14 pt-10 pb-12 max-xl:flex-col max-xl:items-stretch max-md:px-6">
-        {/* 房子挨着排成一条街，空隙里种树、栽花、立路灯；街宽由房子决定，不随屏幕拉开 */}
-        <nav aria-label="小镇" className="flex shrink-0 items-end justify-center max-md:flex-col max-md:items-center max-md:gap-6">
-          <Bush className="mb-[46px] w-12 shrink-0 max-md:hidden" />
-          {has("articles") && (
-            <House href={joinBase(site.basePath, "/articles")} name="邮局" count={`${home.stats.articles} 篇文章`} building={POST_OFFICE} fresh={freshCount("article")} peek="happy" />
-          )}
-          <Tree className="-mx-1 mb-[44px] w-[62px] shrink-0 max-md:hidden" />
-          {has("cards") && <House href={joinBase(site.basePath, "/cards")} name="便签屋" count={`${home.stats.cards} 张卡片`} building={NOTE_SHOP} fresh={freshCount("card")} peek="wink" />}
-          <Lamp className="mx-1 mb-[46px] w-[26px] shrink-0 max-md:hidden" />
-          {firstBook && <House href={firstBook.href} name="图书馆" count={`${home.docStats.projects} 个项目`} building={LIBRARY} fresh={freshCount("doc")} peek="sleepy" />}
-          <Bush className="mb-[46px] w-10 shrink-0 -scale-x-100 max-md:hidden" />
-        </nav>
-        <div className="min-w-[280px] flex-1 self-stretch xl:max-w-[380px]">
-          <Mailbox items={home.timeline.slice(0, RECENT_LIMIT)} />
-        </div>
+    <Layout>
+      <div className="mx-auto max-w-[1120px] px-14 pt-8 pb-6 max-md:px-6">
+        <section className="grid grid-cols-[1fr_360px] items-center gap-[60px] max-lg:grid-cols-1 max-lg:gap-10">
+          <div>
+            <h1 className="text-[68px] leading-[1.12] font-normal tracking-[0.06em] max-sm:text-[46px]" aria-label={site.title}>
+              {[...site.title].map((char, index) => (
+                <span key={index} aria-hidden className="mochi-char-in inline-block" style={{ animationDelay: `${0.08 + index * 0.07}s` }}>
+                  {char}
+                </span>
+              ))}
+            </h1>
+            {site.description && <p className="mt-6 max-w-[430px] text-[17px] leading-[2] text-ink-2">{site.description}</p>}
+            <Counts home={home} />
+          </div>
+          <Mascot />
+        </section>
+        <Menu items={menu} />
+        <Recent items={home.timeline.slice(0, RECENT_LIMIT)} />
       </div>
     </Layout>
   );

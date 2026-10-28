@@ -1,5 +1,6 @@
 export type MochiMood = "happy" | "wink" | "curious" | "sleepy" | "dizzy" | "shy";
-export type MochiColor = "pink" | "mint" | "sky" | "butter";
+/** 四种口味：樱花、抹茶、白玉、栗子 */
+export type MochiColor = "sakura" | "matcha" | "shiro" | "kuri";
 export type MochiHat = "none" | "night" | "post" | "grad" | "santa";
 export type MochiAct = "boing" | "wink" | "tilt" | "sink" | "wobble" | "hop";
 
@@ -19,10 +20,10 @@ export const MOODS: Record<MochiMood, MochiMoodMeta> = {
 };
 
 export const COLORS: Record<MochiColor, string> = {
-  pink: "麻薯粉",
-  mint: "薄荷",
-  sky: "天蓝",
-  butter: "奶黄",
+  sakura: "樱花",
+  matcha: "抹茶",
+  shiro: "白玉",
+  kuri: "栗子",
 };
 
 export const HATS: Record<MochiHat, string> = {

@@ -68,7 +68,7 @@ export function Reactions({ contentKey, onReact }: { contentKey: string; onReact
   };
 
   return (
-    <div className="mt-[30px] flex flex-wrap justify-center gap-2.5">
+    <div className="flex flex-wrap items-center gap-2.5">
       {REACTIONS.map(({ id, emoji, label }) => {
         const on = picked.includes(id);
         return (
@@ -78,8 +78,8 @@ export function Reactions({ contentKey, onReact }: { contentKey: string; onReact
             aria-pressed={on}
             onClick={(event) => react(event, id, emoji)}
             className={cn(
-              "flex cursor-pointer items-center gap-1.5 rounded-full border-sticker bg-paper px-4 py-2 font-head text-[15px] text-ink shadow-lift-s transition-transform duration-300 ease-spring hover:-translate-y-[3px] active:scale-90",
-              on && "bg-pink",
+              "flex cursor-pointer items-center gap-1.5 rounded-full border-hair bg-transparent px-4 py-1.5 font-body text-[14px] text-ink transition-[color,border-color,background-color] duration-200 ease-soft hover:border-seal hover:text-sakura-ink active:scale-95",
+              on && "border-seal bg-tint-sakura text-sakura-ink",
             )}
           >
             <span aria-hidden>{emoji}</span>

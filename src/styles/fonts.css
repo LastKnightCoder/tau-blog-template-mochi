@@ -1,0 +1,8 @@
+/* 字体都按 unicode-range 切片，浏览器只下载页面上出现的字 */
+/* 400.css 是按 unicode-range 切成 93 片的版本；chinese-simplified-400.css 是整字库单文件 */
+@import "@fontsource/zcool-kuaile/400.css";
+@import "@fontsource/baloo-2/latin-500.css";
+@import "@fontsource/baloo-2/latin-700.css";
+@import "@fontsource/jetbrains-mono/latin-400.css";
+/* 大陆规范字形版；包自带的 style.css 会同时引入另外三套变体 */
+@import "lxgw-wenkai-screen-webfont/lxgwwenkaigbscreen.css";

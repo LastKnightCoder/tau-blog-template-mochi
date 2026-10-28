@@ -1,0 +1,38 @@
+@import "@tau/blog/styles.css";
+@import "./fonts.css";
+@import "tailwindcss";
+/* 圆角、动效、字号档位等尺度层与官方模板共用；颜色与字体栈由 tokens.css 覆盖 */
+@import "@tau/blog/theme/scale.css";
+@import "./tokens.css";
+@import "./mochi.css";
+
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
+@layer base {
+  html {
+    background: var(--mochi-cream);
+    color: var(--mochi-ink);
+    font-family: var(--mochi-font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--mochi-butter);
+    color: var(--mochi-ink);
+  }
+
+  :focus-visible {
+    outline: 3px dashed var(--mochi-accent);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

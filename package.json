@@ -1,0 +1,36 @@
+{
+  "name": "tau-blog-template-mochi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@fontsource/baloo-2": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@fontsource/zcool-kuaile": "5.3.0",
+    "@tau/blog": "npm:@xiongtao.xt/tau-blog@0.6.0",
+    "clsx": "2.1.1",
+    "lxgw-wenkai-screen-webfont": "1.7.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "tailwind-merge": "3.7.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.1.18",
+    "@types/node": "20.19.27",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "@vitejs/plugin-react-swc": "3.11.0",
+    "jsdom": "25.0.1",
+    "postcss": "8.5.6",
+    "tailwindcss": "4.1.18",
+    "typescript": "5.8.3",
+    "vite": "5.4.21",
+    "vitest": "3.2.7"
+  }
+}

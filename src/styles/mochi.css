@@ -1,0 +1,189 @@
+/* 团子的 SVG 内部动画：作用在 SVG 子元素上，无法用 Tailwind 类表达 */
+.mochi-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.mochi-svg .mochi-body {
+  transform-origin: 60px 92px;
+  animation: mochi-breathe 4s ease-in-out infinite;
+}
+
+.mochi-svg .mochi-eye {
+  transition: transform 120ms linear;
+}
+
+.mochi-svg .mochi-pupil {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 80ms;
+}
+
+.mochi-svg[data-blink] .mochi-pupil {
+  transform: scaleY(0.12);
+}
+
+.mochi-svg .mochi-zz {
+  fill: var(--mochi-ink-2);
+  font-family: var(--mochi-font-latin);
+  animation: mochi-zz 2.4s ease-in-out infinite;
+}
+
+.mochi-svg .mochi-zz + .mochi-zz {
+  animation-delay: 1.2s;
+}
+
+.mochi-svg .mochi-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mochi-spin 1.6s linear infinite;
+}
+
+.mochi-svg .mochi-sniff {
+  animation: mochi-sniff 0.5s ease-in-out infinite alternate;
+}
+
+.mochi-svg .mochi-sweat {
+  animation: mochi-sweat 1.8s ease-in infinite;
+}
+
+.mochi-svg .mochi-heart {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: mochi-heart 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+/* 招牌动作：data-act 由组件在点击或调用 play() 时写入，动画结束后移除 */
+.mochi-svg[data-act="boing"] .mochi-body {
+  animation: mochi-boing 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mochi-svg[data-act="wink"] .mochi-body {
+  animation: mochi-wink 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mochi-svg[data-act="tilt"] .mochi-body {
+  animation: mochi-tilt 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mochi-svg[data-act="sink"] .mochi-body {
+  animation: mochi-sink 1.4s ease-in-out;
+}
+.mochi-svg[data-act="wobble"] .mochi-body {
+  animation: mochi-wobble 1s ease-in-out;
+}
+.mochi-svg[data-act="hop"] .mochi-body {
+  animation: mochi-hop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mochi-breathe {
+  50% {
+    transform: scale(1.025, 0.975);
+  }
+}
+@keyframes mochi-zz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 6px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(10px, -14px);
+  }
+}
+@keyframes mochi-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes mochi-sniff {
+  to {
+    transform: translateY(-1.5px);
+  }
+}
+@keyframes mochi-sweat {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes mochi-heart {
+  0%,
+  40% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+}
+@keyframes mochi-boing {
+  20% {
+    transform: scale(1.18, 0.78);
+  }
+  45% {
+    transform: scale(0.88, 1.14) translateY(-18px);
+  }
+  70% {
+    transform: scale(1.05, 0.95);
+  }
+}
+@keyframes mochi-wink {
+  40% {
+    transform: rotate(-6deg) translateX(-3px);
+  }
+}
+@keyframes mochi-tilt {
+  30% {
+    transform: rotate(-12deg);
+  }
+  60% {
+    transform: rotate(6deg);
+  }
+}
+@keyframes mochi-sink {
+  40%,
+  60% {
+    transform: scale(1.08, 0.88);
+  }
+}
+@keyframes mochi-wobble {
+  20% {
+    transform: rotate(-8deg) scale(1.04, 0.96);
+  }
+  40% {
+    transform: rotate(7deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+}
+@keyframes mochi-hop {
+  25% {
+    transform: scale(1.1, 0.9);
+  }
+  50% {
+    transform: translateY(-22px) scale(0.94, 1.06);
+  }
+  75% {
+    transform: scale(1.06, 0.94);
+  }
+}

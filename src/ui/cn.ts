@@ -8,11 +8,12 @@ import { extendTailwindMerge } from "tailwind-merge";
 export const THEME_WORDS = {
   color: [
     "cream", "paper", "ink", "ink-2", "ink-3", "line", "pink", "mint", "butter", "sky", "lilac",
-    "peach", "cork", "hill", "accent", "accent-ink", "on-accent", "glow", "sun", "moon", "night-sky", "code",
+    "peach", "cork", "hill", "soft-pink", "soft-mint", "soft-butter", "soft-sky", "soft-lilac", "soft-peach",
+    "meadow", "sheet-line", "accent", "accent-ink", "on-accent", "glow", "sun", "moon", "night-sky", "code",
     "code-ink", "shadow", "white",
   ],
   font: ["head", "latin", "body", "mono"],
-  shadow: ["lift-s", "lift", "lift-l"],
+  shadow: ["lift-s", "lift", "lift-l", "sheet", "sheet-hover"],
   ease: ["spring", "soft", "drop"],
   radius: ["sm", "md", "lg", "xl"],
 } as const;
@@ -29,7 +30,7 @@ const twMerge = extendTailwindMerge({
   },
   extend: {
     classGroups: {
-      "border-w": ["border-sticker", "border-sticker-dashed"],
+      "border-w": ["border-sticker", "border-sticker-dashed", "border-sheet"],
     },
   },
 });

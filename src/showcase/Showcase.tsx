@@ -6,7 +6,7 @@ import { Bubble, Button, Candy, Card, Chip, DayNightSwitch, Input, KIND_TONES, K
 
 const POKE_LINES = ["嘿嘿，好痒～", "今天也要好好写字哦", "我是麻薯做的，不能吃！", "再戳就要变形啦"];
 const MOOD_LIST = Object.keys(MOODS) as MochiMood[];
-const FILLS = ["cream", "paper", "pink", "mint", "butter", "sky", "lilac", "peach", "cork", "hill"] as const;
+const FILLS = ["cream", "paper", "pink", "mint", "butter", "sky", "lilac", "peach", "soft-pink", "soft-mint", "soft-butter", "soft-sky", "soft-lilac", "soft-peach", "meadow"] as const;
 const FILL_CLASS: Record<(typeof FILLS)[number], string> = {
   cream: "bg-cream",
   paper: "bg-paper",
@@ -16,8 +16,13 @@ const FILL_CLASS: Record<(typeof FILLS)[number], string> = {
   sky: "bg-sky",
   lilac: "bg-lilac",
   peach: "bg-peach",
-  cork: "bg-cork",
-  hill: "bg-hill",
+  "soft-pink": "bg-soft-pink",
+  "soft-mint": "bg-soft-mint",
+  "soft-butter": "bg-soft-butter",
+  "soft-sky": "bg-soft-sky",
+  "soft-lilac": "bg-soft-lilac",
+  "soft-peach": "bg-soft-peach",
+  meadow: "bg-meadow",
 };
 
 function Section({ title, children }: { title: string; children: ReactNode }) {

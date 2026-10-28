@@ -5,6 +5,7 @@
 @import "@tau/blog/theme/scale.css";
 @import "./tokens.css";
 @import "./mochi.css";
+@import "./scene.css";
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 

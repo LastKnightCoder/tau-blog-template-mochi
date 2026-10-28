@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "check": "tsc --noEmit",
     "test": "vitest run",
-    "build": "vite build"
+    "build": "node scripts/build.mjs"
   },
   "dependencies": {
     "@fontsource/baloo-2": "5.3.0",
@@ -17,15 +17,23 @@
     "clsx": "2.1.1",
     "lxgw-wenkai-screen-webfont": "1.7.0",
     "react": "19.2.0",
+    "react-dnd": "16.0.1",
+    "react-dnd-html5-backend": "16.0.1",
     "react-dom": "19.2.0",
+    "slate": "0.126.2",
+    "slate-dom": "0.126.0",
+    "slate-history": "0.113.1",
+    "slate-react": "0.126.4",
     "tailwind-merge": "3.7.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.1.18",
+    "@types/adm-zip": "0.6.0",
     "@types/node": "20.19.27",
     "@types/react": "19.2.0",
     "@types/react-dom": "19.2.0",
     "@vitejs/plugin-react-swc": "3.11.0",
+    "adm-zip": "0.5.16",
     "jsdom": "25.0.1",
     "postcss": "8.5.6",
     "tailwindcss": "4.1.18",

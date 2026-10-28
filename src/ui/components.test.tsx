@@ -80,15 +80,15 @@ describe("Bubble、Card 与 Note", () => {
       </>,
     );
     const [still, live] = container.children;
-    expect(still.className).not.toContain("hover:shadow-lift-l");
-    expect(live.className).toContain("hover:shadow-lift-l");
+    expect(still.className).not.toContain("hover:shadow-sheet-hover");
+    expect(live.className).toContain("hover:shadow-sheet-hover");
   });
 
-  it("便签的倾斜角度写在样式变量上，图钉可以去掉", () => {
+  it("便签的倾斜角度写在样式变量上，胶带可以去掉", () => {
     const { container } = render(
       <>
         <Note tilt={2}>一</Note>
-        <Note pin={false}>二</Note>
+        <Note tape={false}>二</Note>
       </>,
     );
     const [tilted, plain] = container.children as unknown as HTMLElement[];

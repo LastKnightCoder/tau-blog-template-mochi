@@ -29,9 +29,27 @@ importers:
       react:
         specifier: 19.2.0
         version: 19.2.0
+      react-dnd:
+        specifier: 16.0.1
+        version: 16.0.1(@types/node@20.19.27)(@types/react@19.2.0)(react@19.2.0)
+      react-dnd-html5-backend:
+        specifier: 16.0.1
+        version: 16.0.1
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      slate:
+        specifier: 0.126.2
+        version: 0.126.2
+      slate-dom:
+        specifier: 0.126.0
+        version: 0.126.0(slate@0.126.2)
+      slate-history:
+        specifier: 0.113.1
+        version: 0.113.1(slate@0.126.2)
+      slate-react:
+        specifier: 0.126.4
+        version: 0.126.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(slate-dom@0.126.0(slate@0.126.2))(slate@0.126.2)
       tailwind-merge:
         specifier: 3.7.0
         version: 3.7.0
@@ -39,6 +57,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.1.18
         version: 4.1.18(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2))
+      '@types/adm-zip':
+        specifier: 0.6.0
+        version: 0.6.0
       '@types/node':
         specifier: 20.19.27
         version: 20.19.27
@@ -51,6 +72,9 @@ importers:
       '@vitejs/plugin-react-swc':
         specifier: 3.11.0
         version: 3.11.0(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2))
+      adm-zip:
+        specifier: 0.5.16
+        version: 0.5.16
       jsdom:
         specifier: 25.0.1
         version: 25.0.1
@@ -617,6 +641,10 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
+  '@types/adm-zip@0.6.0':
+    resolution: {integrity: sha512-4BJwT30zsKqyYk+PgJS+LQzVrLh0bHragg9etHGg679uuBbNDbSaLsJy+DaJQZM8AvESHB+t3ruVzbrn6BUsMQ==}
+    deprecated: This is a stub types definition. adm-zip provides its own type definitions, so you do not need this installed.
+
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
@@ -682,6 +710,10 @@ packages:
       slate-dom: 0.126.0
       slate-history: 0.113.1
       slate-react: 0.126.4
+
+  adm-zip@0.5.16:
+    resolution: {integrity: sha512-TGw5yVi4saajsSEgz25grObGHEUaDrniwvA2qwSC060KfqGPdglhvPMA2lPIoxs3PQIItj2iag35fONcQqgUaQ==}
+    engines: {node: '>=12.0'}
 
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
@@ -1650,6 +1682,10 @@ snapshots:
       tailwindcss: 4.1.18
       vite: 5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)
 
+  '@types/adm-zip@0.6.0':
+    dependencies:
+      adm-zip: 0.5.16
+
   '@types/chai@5.2.3':
     dependencies:
       '@types/deep-eql': 4.0.2
@@ -1735,6 +1771,8 @@ snapshots:
       slate-dom: 0.126.0(slate@0.126.2)
       slate-history: 0.113.1(slate@0.126.2)
       slate-react: 0.126.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(slate-dom@0.126.0(slate@0.126.2))(slate@0.126.2)
+
+  adm-zip@0.5.16: {}
 
   agent-base@7.1.4: {}
 

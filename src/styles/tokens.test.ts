@@ -44,7 +44,10 @@ function contrast(a: string, b: string) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-const FILLS = ["pink", "mint", "butter", "sky", "lilac", "peach", "cork", "hill"];
+const FILLS = [
+  "pink", "mint", "butter", "sky", "lilac", "peach", "cork", "hill",
+  "soft-pink", "soft-mint", "soft-butter", "soft-sky", "soft-lilac", "soft-peach", "meadow", "horizon",
+];
 const BODIES = ["pink", "mint", "sky", "butter"];
 const MODES = ["light", "dark"] as const;
 

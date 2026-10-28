@@ -3,14 +3,16 @@
  *
  * 原始值统一用 --mochi-* 命名空间，避免与正文插件样式撞名；模板组件经下方 @theme 映射的
  * Tailwind 语义类消费（bg-paper / text-ink-2 / shadow-lift …），不直接写色值。
- * 规则：马卡龙色只做填充，文字一律用墨色；对比度由 tokens.test.ts 守护。
+ * 规则：马卡龙色只做小面积点缀与胶带，大面积用淡色组（soft-*）；文字一律用墨色。
+ * 描边分两级：纸面（页面容器、卡片、信纸、便签）用浅细线 + 柔和落影；
+ * 贴纸（按钮、标签、开关、团子与插画）保留墨线 + 硬投影。对比度由 tokens.test.ts 守护。
  */
 :root {
   color-scheme: light;
 
   /* 底色与墨色 */
-  --mochi-cream: #fff8f0;
-  --mochi-paper: #fffdf9;
+  --mochi-cream: #fbf6ee;
+  --mochi-paper: #fffdfa;
   --mochi-ink: #3b2f3a;
   --mochi-ink-2: #64555f;
   --mochi-ink-3: #9a8a95;
@@ -27,8 +29,24 @@
   --mochi-cork: #edcfa6;
   --mochi-hill: #cdefc9;
 
+  /* 淡色组：大面积填充（便签纸、高亮区、草地、天空），比马卡龙色浅得多 */
+  --mochi-soft-pink: #fde8ee;
+  --mochi-soft-mint: #e4f4eb;
+  --mochi-soft-butter: #fff5d6;
+  --mochi-soft-sky: #e8f2fd;
+  --mochi-soft-lilac: #efe8fd;
+  --mochi-soft-peach: #ffeee2;
+  --mochi-meadow: #e4f1dc;
+  --mochi-horizon: #d9e9fa;
+
+  /* 纸面一级：浅细线与柔和落影 */
+  --mochi-sheet-line: rgb(59 47 58 / 0.2);
+  --mochi-sheet-shadow: 0 1px 0 rgb(59 47 58 / 0.05), 0 14px 26px -20px rgb(59 47 58 / 0.5);
+  --mochi-sheet-shadow-hover: 0 1px 0 rgb(59 47 58 / 0.05), 0 22px 30px -20px rgb(59 47 58 / 0.55);
+  --mochi-dot: rgb(59 47 58 / 0.14);
+
   /* 强调色：accent 只做图形，accent-ink 用于文字与白字按钮底 */
-  --mochi-accent: #e8628c;
+  --mochi-accent: #e25a86;
   --mochi-accent-ink: #b8336a;
   --mochi-on-accent: #ffffff;
   --mochi-glow: #ffe9a3;
@@ -70,41 +88,41 @@
   --tau-bg-track: color-mix(in srgb, var(--mochi-ink) 16%, transparent);
   --tau-bg-hover: color-mix(in srgb, var(--mochi-ink) 6%, transparent);
   --tau-bg-press: color-mix(in srgb, var(--mochi-ink) 12%, transparent);
-  --tau-bg-selected: color-mix(in srgb, var(--mochi-pink) 60%, transparent);
+  --tau-bg-selected: var(--mochi-soft-pink);
   --tau-ink-1: var(--mochi-ink);
   --tau-ink-2: var(--mochi-ink-2);
   --tau-ink-3: var(--mochi-ink-3);
   --tau-ink-inverse: var(--mochi-cream);
-  --tau-line-1: color-mix(in srgb, var(--mochi-ink) 20%, transparent);
+  --tau-line-1: var(--mochi-sheet-line);
   --tau-line-2: color-mix(in srgb, var(--mochi-ink) 10%, transparent);
   --tau-accent: var(--mochi-accent-ink);
   --tau-accent-hover: color-mix(in srgb, var(--mochi-accent-ink) 85%, var(--mochi-ink));
-  --tau-accent-soft: var(--mochi-pink);
+  --tau-accent-soft: var(--mochi-soft-pink);
   --tau-accent-text: var(--mochi-accent-ink);
   --tau-focus-ring: 0 0 0 3px color-mix(in srgb, var(--mochi-accent) 40%, transparent);
   --tau-ok: #2b7350;
-  --tau-ok-soft: var(--mochi-mint);
+  --tau-ok-soft: var(--mochi-soft-mint);
   --tau-warn: #80590c;
-  --tau-warn-soft: var(--mochi-butter);
+  --tau-warn-soft: var(--mochi-soft-butter);
   --tau-danger: #9c2e2e;
-  --tau-danger-soft: var(--mochi-pink);
+  --tau-danger-soft: var(--mochi-soft-pink);
   --tau-info: #2c6499;
-  --tau-info-soft: var(--mochi-sky);
+  --tau-info-soft: var(--mochi-soft-sky);
   --tau-tag-1: var(--tau-ok);
-  --tau-tag-1-soft: var(--mochi-mint);
+  --tau-tag-1-soft: var(--mochi-soft-mint);
   --tau-tag-2: var(--tau-info);
-  --tau-tag-2-soft: var(--mochi-sky);
+  --tau-tag-2-soft: var(--mochi-soft-sky);
   --tau-tag-3: #6a48b8;
-  --tau-tag-3-soft: var(--mochi-lilac);
+  --tau-tag-3-soft: var(--mochi-soft-lilac);
   --tau-tag-4: var(--tau-warn);
-  --tau-tag-4-soft: var(--mochi-butter);
+  --tau-tag-4-soft: var(--mochi-soft-butter);
   --tau-tag-5: var(--mochi-accent-ink);
-  --tau-tag-5-soft: var(--mochi-pink);
+  --tau-tag-5-soft: var(--mochi-soft-pink);
   --tau-overlay: rgb(59 47 58 / 0.35);
-  --tau-shadow-card: 0 1px 0 color-mix(in srgb, var(--mochi-shadow-color) 25%, transparent);
-  --tau-shadow-lift: var(--mochi-lift-s);
-  --tau-shadow-float: 0 0 0 1.5px var(--mochi-line), 0 3px 0 var(--mochi-shadow-color);
-  --tau-shadow-paper: var(--mochi-lift);
+  --tau-shadow-card: 0 0 0 1px var(--mochi-sheet-line);
+  --tau-shadow-lift: var(--mochi-sheet-shadow);
+  --tau-shadow-float: 0 0 0 1.5px var(--mochi-sheet-line), var(--mochi-sheet-shadow);
+  --tau-shadow-paper: var(--mochi-sheet-shadow);
   --tau-font: var(--mochi-font-body);
   --tau-font-mono: var(--mochi-font-mono);
 }
@@ -129,6 +147,20 @@
   --mochi-peach: #5e4236;
   --mochi-cork: #5b4637;
   --mochi-hill: #2b3a3a;
+
+  --mochi-soft-pink: #3a2b3f;
+  --mochi-soft-mint: #26393a;
+  --mochi-soft-butter: #3a3430;
+  --mochi-soft-sky: #27334a;
+  --mochi-soft-lilac: #302b4a;
+  --mochi-soft-peach: #3b2d33;
+  --mochi-meadow: #24302f;
+  --mochi-horizon: #2a2f57;
+
+  --mochi-sheet-line: rgb(201 188 210 / 0.22);
+  --mochi-sheet-shadow: 0 1px 0 rgb(0 0 0 / 0.2), 0 16px 28px -18px rgb(0 0 0 / 0.75);
+  --mochi-sheet-shadow-hover: 0 1px 0 rgb(0 0 0 / 0.2), 0 24px 32px -18px rgb(0 0 0 / 0.8);
+  --mochi-dot: rgb(201 188 210 / 0.16);
 
   --mochi-accent: #ff8fb3;
   --mochi-accent-ink: #ff8fb3;
@@ -176,6 +208,14 @@
   --color-peach: var(--mochi-peach);
   --color-cork: var(--mochi-cork);
   --color-hill: var(--mochi-hill);
+  --color-soft-pink: var(--mochi-soft-pink);
+  --color-soft-mint: var(--mochi-soft-mint);
+  --color-soft-butter: var(--mochi-soft-butter);
+  --color-soft-sky: var(--mochi-soft-sky);
+  --color-soft-lilac: var(--mochi-soft-lilac);
+  --color-soft-peach: var(--mochi-soft-peach);
+  --color-meadow: var(--mochi-meadow);
+  --color-sheet-line: var(--mochi-sheet-line);
   --color-accent: var(--mochi-accent);
   --color-accent-ink: var(--mochi-accent-ink);
   --color-on-accent: var(--mochi-on-accent);
@@ -195,6 +235,8 @@
   --shadow-lift-s: var(--mochi-lift-s);
   --shadow-lift: var(--mochi-lift);
   --shadow-lift-l: var(--mochi-lift-l);
+  --shadow-sheet: var(--mochi-sheet-shadow);
+  --shadow-sheet-hover: var(--mochi-sheet-shadow-hover);
 
   /* spring：用户触发、会冲过头；soft：页面与颜色过渡；drop：盖章、钉便签 */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -207,6 +249,13 @@
   border-width: var(--mochi-stroke);
   border-style: solid;
   border-color: var(--mochi-line);
+}
+
+/* 纸面描边：页面容器、卡片、信纸、便签 */
+@utility border-sheet {
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: var(--mochi-sheet-line);
 }
 
 @utility border-sticker-dashed {

@@ -1,0 +1,357 @@
+/*
+ * 场景与页面的装饰：多层背景、伪元素纹理、keyframes 与正文元素外观。
+ * 这些写成 Tailwind 类串会难以阅读，集中在这里；颜色仍只取 tokens.css 的变量。
+ */
+
+:root {
+  --mochi-cloud: #ffffff;
+  --mochi-sky-top: var(--mochi-sky);
+}
+:root[data-mode="dark"] {
+  --mochi-cloud: #4a4878;
+  --mochi-sky-top: #2a2f57;
+}
+
+/* —— 首页天空、太阳、云：水彩晕染，天色由浅蓝慢慢化进奶油底 —— */
+.mochi-sky {
+  background:
+    radial-gradient(120% 70% at 85% 0%, color-mix(in srgb, var(--mochi-horizon) 85%, transparent), transparent 60%),
+    linear-gradient(var(--mochi-horizon), color-mix(in srgb, var(--mochi-horizon) 40%, var(--mochi-cream)) 260px, var(--mochi-cream) 380px);
+}
+.mochi-meadow {
+  background:
+    radial-gradient(60% 120% at 20% 0%, color-mix(in srgb, var(--mochi-hill) 55%, transparent), transparent 70%),
+    var(--mochi-meadow);
+}
+.mochi-sun {
+  background: var(--mochi-sun);
+  transition: background-color 1s, box-shadow 1s;
+}
+:root[data-mode="dark"] .mochi-sun {
+  background: var(--mochi-moon);
+  box-shadow: inset -18px -4px 0 var(--mochi-moon-shade);
+}
+.mochi-drift {
+  animation: mochi-drift linear infinite;
+}
+@keyframes mochi-drift {
+  from {
+    transform: translateX(-160px);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+.mochi-smoke {
+  opacity: 0;
+  animation: mochi-smoke 3s ease-out infinite;
+}
+@keyframes mochi-smoke {
+  0% {
+    opacity: 0.9;
+    transform: translate(0, 0) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(16px, -50px) scale(1.4);
+  }
+}
+.mochi-bob {
+  animation: mochi-bob 2.6s ease-in-out infinite;
+}
+@keyframes mochi-bob {
+  50% {
+    transform: translateY(-5px) rotate(4deg);
+  }
+}
+.mochi-flag {
+  animation: mochi-flag 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+@keyframes mochi-flag {
+  0%,
+  70% {
+    transform: rotate(0);
+  }
+  80% {
+    transform: rotate(-25deg);
+  }
+  90% {
+    transform: rotate(8deg);
+  }
+}
+.mochi-char-in {
+  animation: mochi-char-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes mochi-char-in {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.4);
+  }
+}
+
+/* —— 页脚草地与蜗牛 —— */
+.mochi-grass {
+  background: radial-gradient(circle at 7px 14px, var(--mochi-hill) 6px, transparent 7px) 0 0 / 14px 14px repeat-x;
+}
+.mochi-crawl {
+  animation: mochi-crawl 26s linear infinite;
+}
+@keyframes mochi-crawl {
+  to {
+    transform: translateX(min(560px, 50vw));
+  }
+}
+
+/* —— 页面入场、回到顶部的气球、团子雨、加载 —— */
+.mochi-page-in {
+  animation: mochi-page-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes mochi-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+}
+.mochi-sway {
+  animation: mochi-sway 3s ease-in-out infinite;
+}
+@keyframes mochi-sway {
+  50% {
+    transform: rotate(5deg) translateY(-4px);
+  }
+}
+.mochi-float-away {
+  animation: mochi-float-away 1s cubic-bezier(0.5, 0, 0.8, 0.4) forwards;
+}
+@keyframes mochi-float-away {
+  to {
+    transform: translateY(-80vh) rotate(-10deg);
+    opacity: 0;
+  }
+}
+.mochi-rain {
+  animation: mochi-rain linear forwards;
+}
+@keyframes mochi-rain {
+  to {
+    transform: translateY(110vh) rotate(var(--spin));
+  }
+}
+.mochi-hop {
+  display: inline-block;
+  animation: mochi-hop-loop 1s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+@keyframes mochi-hop-loop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.1, 0.9);
+  }
+  40% {
+    transform: translateY(-22px) scale(0.92, 1.08);
+  }
+}
+.mochi-particle {
+  animation: mochi-particle 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+@keyframes mochi-particle {
+  to {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--spin)) scale(0.4);
+    opacity: 0;
+  }
+}
+
+/* —— 文章列表：横线信纸与邮戳 —— */
+.mochi-ruled {
+  background-image: repeating-linear-gradient(transparent 0 31px, color-mix(in srgb, var(--mochi-pink) 45%, transparent) 31px 32px);
+  background-position: 0 18px;
+}
+.mochi-postmark {
+  opacity: 0;
+  transform: scale(1.8) rotate(-30deg);
+  transition:
+    opacity 0.25s cubic-bezier(0.5, 0, 0.75, 0),
+    transform 0.25s cubic-bezier(0.5, 0, 0.75, 0);
+  mix-blend-mode: multiply;
+}
+:root[data-mode="dark"] .mochi-postmark {
+  mix-blend-mode: normal;
+}
+.group:hover .mochi-postmark,
+.group:focus-visible .mochi-postmark {
+  opacity: 0.85;
+  transform: scale(1) rotate(-14deg);
+}
+
+/* —— 绘本封面：淡薄荷的水彩晕染 —— */
+.mochi-cover {
+  background:
+    radial-gradient(80% 140% at 90% 100%, color-mix(in srgb, var(--mochi-mint) 70%, transparent), transparent 70%),
+    var(--mochi-soft-mint);
+}
+
+/* —— 卡片：手帐点阵页、便签落下、红毛线 —— */
+.mochi-dots {
+  background-color: var(--mochi-cream);
+  background-image: radial-gradient(var(--mochi-dot) 1px, transparent 1.5px);
+  background-size: 18px 18px;
+  background-position: 9px 9px;
+}
+.mochi-note-in {
+  animation: mochi-note-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes mochi-note-in {
+  from {
+    opacity: 0;
+    transform: translateY(-60px) rotate(-14deg) scale(0.6);
+  }
+}
+.mochi-yarn {
+  fill: none;
+  stroke: var(--mochi-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 6 7;
+  animation: mochi-march 1.2s linear infinite;
+}
+@keyframes mochi-march {
+  to {
+    stroke-dashoffset: -26;
+  }
+}
+
+/* —— 文章：活页纸、打孔、和纸胶带 —— */
+.mochi-sheet {
+  background-image: repeating-linear-gradient(transparent 0 33px, color-mix(in srgb, var(--mochi-pink) 35%, transparent) 33px 34px);
+  background-position: 0 30px;
+}
+/* 打孔用纸面细线描一圈，不用墨色实心圆 */
+.mochi-sheet::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  left: 22px;
+  width: 14px;
+  background: radial-gradient(circle at 7px 7px, var(--mochi-cream) 0 5px, var(--mochi-sheet-line) 5px 6.5px, transparent 7px) 0 0 / 14px 34px repeat-y;
+}
+/* 和纸胶带：半透明、没有描边、两端撕口，压在纸上能透出底下的颜色 */
+.mochi-washi {
+  --washi: var(--mochi-pink);
+  opacity: 0.78;
+  background: repeating-linear-gradient(45deg, var(--washi) 0 8px, color-mix(in srgb, var(--washi) 55%, var(--mochi-paper)) 8px 16px);
+  /* 两端锯齿撕口 */
+  clip-path: polygon(0 8%, 3% 0, 97% 0, 100% 10%, 98% 30%, 100% 52%, 98% 74%, 100% 92%, 97% 100%, 3% 100%, 0 90%, 2% 70%, 0 48%, 2% 26%);
+}
+.mochi-washi-mint {
+  --washi: var(--mochi-mint);
+}
+.mochi-washi-butter {
+  --washi: var(--mochi-butter);
+}
+.mochi-washi-sky {
+  --washi: var(--mochi-sky);
+}
+.mochi-washi-lilac {
+  --washi: var(--mochi-lilac);
+}
+.mochi-washi-peach {
+  --washi: var(--mochi-peach);
+}
+.mochi-stripe {
+  background: repeating-linear-gradient(-45deg, var(--mochi-accent) 0 8px, var(--mochi-pink) 8px 16px);
+  background-size: 22px 100%;
+  animation: mochi-stripe 1s linear infinite;
+}
+@keyframes mochi-stripe {
+  to {
+    background-position: 22px 0;
+  }
+}
+
+/* —— 搜索弹窗 —— */
+.mochi-search[open] {
+  animation: mochi-fade 0.25s;
+}
+.mochi-pop {
+  animation: mochi-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mochi-hit-in {
+  animation: mochi-hit-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes mochi-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes mochi-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.85);
+  }
+}
+@keyframes mochi-hit-in {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+}
+
+/*
+ * —— 正文：只换字体、行高、标题小图标、引用块、代码块外框与链接 ——
+ * 不加旋转和纹理，表格、公式、图册等编辑器内容原样可读。
+ */
+.mochi-prose {
+  font-family: var(--mochi-font-body);
+  font-size: 17px;
+  line-height: 1.95;
+  color: var(--mochi-ink);
+  --ed-quote-mark: var(--mochi-accent);
+  --ed-quote-bar: var(--mochi-accent);
+  --ed-code-bg: var(--mochi-paper);
+  --ed-code-shadow: 0 0 0 var(--mochi-stroke) var(--mochi-line), 0 2px 0 calc(var(--mochi-stroke)) var(--mochi-shadow-color);
+  --ed-selection: var(--mochi-butter);
+}
+.mochi-prose :where(h1, h2, h3) {
+  font-family: var(--mochi-font-head);
+  font-weight: 400;
+  line-height: 1.4;
+}
+.mochi-prose :where(h2)::before {
+  content: "";
+  flex: none;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.15em;
+  border: var(--mochi-stroke) solid var(--mochi-line);
+  border-radius: 50% 50% 50% 0;
+  background: var(--mochi-pink);
+  transform: rotate(-45deg);
+}
+.mochi-prose :where(code):not(pre code) {
+  font-family: var(--mochi-font-mono);
+  font-size: 0.85em;
+  background: var(--mochi-lilac);
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+}
+.mochi-link {
+  color: var(--mochi-accent-ink);
+  text-decoration: none;
+  background: linear-gradient(var(--mochi-pink), var(--mochi-pink)) 0 100% / 100% 3px no-repeat;
+  transition: background-size 0.3s;
+}
+.mochi-link:hover,
+.mochi-link:focus-visible {
+  background-size: 100% 100%;
+}
+.mochi-link-missing {
+  color: var(--mochi-ink-2);
+  text-decoration: underline dashed var(--mochi-ink-3);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+/* 路灯夜里亮起 */
+:root[data-mode="dark"] .mochi-lamp-glow {
+  opacity: 0.35;
+}

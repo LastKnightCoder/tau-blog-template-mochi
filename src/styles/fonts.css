@@ -1,6 +1,10 @@
 /* 字体都按 unicode-range 切片，浏览器只下载页面上出现的字 */
-/* 400.css 是按 unicode-range 切成 93 片的版本；chinese-simplified-400.css 是整字库单文件 */
-@import "@fontsource/zcool-kuaile/400.css";
+/*
+ * 站酷快乐体只用于标题和按钮，用简体整字库单文件：切片版有 93 个文件，
+ * 加上正文渲染器自带的约 360 个文件会超过插件中心每包 512 个文件的上限。
+ */
+@import "@fontsource/zcool-kuaile/chinese-simplified-400.css";
+@import "@fontsource/zcool-kuaile/latin-400.css";
 @import "@fontsource/baloo-2/latin-500.css";
 @import "@fontsource/baloo-2/latin-700.css";
 @import "@fontsource/jetbrains-mono/latin-400.css";

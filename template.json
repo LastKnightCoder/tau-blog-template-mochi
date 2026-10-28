@@ -1,0 +1,50 @@
+{
+  "id": "tau.blog-mochi",
+  "name": "团子小镇",
+  "description": "可爱风博客模板：站点是一座小镇，一只会看你、会被戳、会睡着的团子陪访客读文章、翻卡片、逛项目文档。",
+  "minAppVersion": "0.59.0",
+  "categories": ["blog-template"],
+  "keywords": ["博客", "个人网站", "静态站点", "可爱", "主题"],
+  "siteFields": [
+    {
+      "key": "description",
+      "label": "站点描述",
+      "type": "textarea",
+      "placeholder": "我在这里写字、记卡片、整理做过的小项目。",
+      "description": "显示在首页站名下方，留空则不显示"
+    },
+    {
+      "key": "mascotName",
+      "label": "团子的名字",
+      "type": "text",
+      "placeholder": "团子",
+      "description": "出现在首页问候和找不到页面时"
+    },
+    {
+      "key": "mascotColor",
+      "label": "团子的颜色",
+      "type": "select",
+      "options": [
+        { "value": "pink", "label": "麻薯粉" },
+        { "value": "mint", "label": "薄荷" },
+        { "value": "sky", "label": "天蓝" },
+        { "value": "butter", "label": "奶黄" }
+      ],
+      "default": "pink"
+    },
+    {
+      "key": "mascotLines",
+      "label": "团子的口头禅",
+      "type": "textarea",
+      "placeholder": "嘿嘿，好痒～\n今天也要好好写字哦",
+      "description": "访客戳团子时轮流说，每行一句；留空用默认的几句"
+    },
+    {
+      "key": "ambient",
+      "label": "小镇动画",
+      "type": "switch",
+      "default": true,
+      "description": "首页的云、烟囱的烟和小蜗牛；关掉后小镇保持静止"
+    }
+  ]
+}

@@ -77,5 +77,4 @@ export interface PageData extends Chrome {
   /** 原始结果，交给 ContentRenderer 渲染正文 */
   result: Published.DataResult;
   sidebar?: SidebarNode[];
-  tagTree: TagNode[];
 }

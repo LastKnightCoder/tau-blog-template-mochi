@@ -64,7 +64,7 @@ describe("页面", () => {
   it("文章列表：按标签筛选，筛选写在地址上", async () => {
     await open("/articles");
     await settle(() => text().includes("写给你的长信") && document.querySelectorAll('main a[href^="/articles/"]').length === 3, "文章列表");
-    const coffee = [...document.querySelectorAll<HTMLButtonElement>("button[aria-pressed]")].find((button) => button.textContent === "咖啡")!;
+    const coffee = [...document.querySelectorAll<HTMLButtonElement>('nav[aria-label="按标签筛选"] button[aria-pressed]')].find((button) => button.textContent?.startsWith("咖啡"))!;
     await act(async () => coffee.click());
     await settle(() => document.querySelectorAll('main a[href^="/articles/"]').length === 1, "筛选后只剩一封");
     expect(window.location.search).toBe("?tag=%E5%92%96%E5%95%A1");
@@ -81,10 +81,29 @@ describe("页面", () => {
 
   it("卡片列表：一盒点心格，按子标签筛选", async () => {
     await open("/cards?tag=%E6%80%9D%E8%80%83%2F%E5%AD%A6%E4%B9%A0");
-    await settle(() => text().includes("「思考/学习」下有 2 张卡片"), "按子标签筛选");
-    expect(document.querySelectorAll("main ul.grid > li")).toHaveLength(2);
-    const pressed = document.querySelector('[role="group"] button[aria-pressed="true"]')!;
-    expect(pressed.textContent).toContain("思考 / 学习");
+    await settle(() => document.querySelectorAll("main ul.grid > li").length === 2, "按子标签筛选");
+    expect(text()).toContain("思考 / 学习2 张");
+    // 当前标签的上级自动展开，选中项是子标签「学习」
+    const pressed = document.querySelector('nav[aria-label="按标签筛选"] button[aria-pressed="true"]')!;
+    expect(pressed.textContent).toBe("学习2");
+    expect(document.querySelector('button[aria-label="收起「思考」的子标签"]')).not.toBeNull();
+    expect(document.querySelector("main section h2")!.textContent).toMatch(/\d{4} 年 \d+ 月/);
+  });
+
+  it("卡片列表：标签多时可以搜索标签", async () => {
+    await open("/cards");
+    await settle(() => document.querySelectorAll("main ul.grid li").length === 6, "卡片列表");
+    const input = document.querySelector<HTMLInputElement>('input[aria-label="找标签"]')!;
+    await act(async () => {
+      const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!;
+      setValue.call(input, "写");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const options = [...document.querySelectorAll('nav[aria-label="按标签筛选"] button[aria-pressed]')].map((button) => button.textContent);
+    expect(options).toEqual(["思考 / 写作1"]);
+    await act(async () => document.querySelector<HTMLButtonElement>('nav[aria-label="按标签筛选"] button[aria-pressed]')!.click());
+    await settle(() => document.querySelectorAll("main ul.grid li").length === 1, "选中搜索结果");
+    expect(decodeURIComponent(window.location.search)).toBe("?tag=思考/写作");
   });
 
   it("卡片详情：正文与连着的卡片", async () => {

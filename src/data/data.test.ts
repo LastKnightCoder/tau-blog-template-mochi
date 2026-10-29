@@ -85,11 +85,10 @@ describe("页面数据", () => {
     expect(page.collections[0].items[0]).toMatchObject({ active: true, href: "/notes/projects/12/34" });
   });
 
-  it("导航只列出已发布的集合，标签树带完整路径", async () => {
+  it("导航只列出已发布的集合", async () => {
     const { site } = await open();
     const page = (await site.readPage("/"))!;
     expect(page.navigation.map((item) => item.label)).toEqual(["文章"]);
-    expect(page.tagTree[0].children[0]).toMatchObject({ tag: "学习", path: "思考/学习", count: 2 });
   });
 
   it("搜索索引地址相对清单解析", async () => {

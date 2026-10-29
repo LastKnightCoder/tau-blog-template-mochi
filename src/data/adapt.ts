@@ -2,7 +2,7 @@ import type * as Published from "@tau/blog";
 import type { DataManifest, DataResult } from "@tau/blog";
 import { joinBase, type RouteTable } from "./routes";
 import { readSiteSettings } from "./site";
-import type { Chrome, DocCollectionView, NavItem, PageContent, PageData, SidebarNode, TagNode } from "./types";
+import type { Chrome, DocCollectionView, NavItem, PageContent, PageData, SidebarNode } from "./types";
 
 /** 把 ContentRef 换成带 basePath 的地址；目标未发布的条目直接丢掉，页面上不出现死链 */
 function linker(routes: RouteTable, basePath: string) {
@@ -62,13 +62,6 @@ function sidebar(items: readonly Published.TreeItem[], link: ReturnType<typeof l
   }));
 }
 
-function tagTree(items: readonly Published.CardTagTree[], parent = ""): TagNode[] {
-  return items.map((item) => {
-    const path = parent ? `${parent}/${item.tag}` : item.tag;
-    return { tag: item.tag, path, count: item.count, children: tagTree(item.children ?? [], path) };
-  });
-}
-
 function navigation(manifest: DataManifest, basePath: string): NavItem[] {
   const lists = new Set(manifest.items.filter((item) => item.type === "list").map((item) => item.collectionType));
   const nav: NavItem[] = [];
@@ -107,6 +100,5 @@ export function adaptData(result: DataResult, manifest: DataManifest, routes: Ro
     page: adaptPage(data, link),
     result,
     sidebar: tree && sidebar(tree, link),
-    tagTree: tagTree(manifest.cardTagTree ?? []),
   };
 }

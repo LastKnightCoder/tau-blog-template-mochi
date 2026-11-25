@@ -1,6 +1,7 @@
 {
   "name": "tau-blog-template-mochi",
   "version": "0.1.4",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {

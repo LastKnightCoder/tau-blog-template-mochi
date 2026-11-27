@@ -2,7 +2,7 @@
   "id": "tau.blog-mochi",
   "name": "团子铺",
   "description": "可爱但安静的博客模板：把博客当成一家和果子小店，店主是一只会看你、会被戳、会打盹的团子。",
-  "minAppVersion": "0.59.0",
+  "minAppVersion": "0.68.0",
   "categories": [
     "blog-template"
   ],
@@ -13,6 +13,30 @@
     "可爱",
     "主题"
   ],
+  "i18n": {
+    "zh-TW": {
+      "name": "糰子舖",
+      "description": "可愛而安靜的部落格模板：把部落格當成一家和菓子小店，店主是一隻會看著你、可以被戳、會打盹的糰子。",
+      "keywords": [
+        "部落格",
+        "個人網站",
+        "靜態網站",
+        "可愛",
+        "佈景主題"
+      ]
+    },
+    "en-US": {
+      "name": "Mochi Shop",
+      "description": "A cute yet calm blog template themed as a wagashi shop, hosted by a mochi mascot that watches you, reacts to pokes, and takes naps.",
+      "keywords": [
+        "blog",
+        "personal site",
+        "static site",
+        "cute",
+        "theme"
+      ]
+    }
+  },
   "siteFields": [
     {
       "key": "description",
